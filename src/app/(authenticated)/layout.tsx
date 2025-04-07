@@ -1,6 +1,6 @@
 // Server Component – no "use client" needed
 import { ReactNode } from "react";
-import AppShell from "@/components/layouts/AppShell"; // ⬅️ will create in Task 2
+import AppShell from "@/components/layouts/AppShell";
 
 interface AuthenticatedLayoutProps {
   children: ReactNode;

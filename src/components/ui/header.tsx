@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b pt-safe-top">
-      <div className="mx-auto flex h-14 max-w-screen-lg items-center gap-2 px-4">
+      <div className="mx-auto flex h-14 max-w-screen-lg items-center gap-2 px-4 min-w-0 overflow-hidden">
         {/* ───── left: mobile menu button ───── */}
         <Button
           variant="ghost"
@@ -18,7 +18,10 @@ export default function Header() {
         </Button>
 
         {/* ───── brand / home link ───── */}
-        <Link href="/library" className="text-lg font-semibold tracking-tight">
+        <Link
+          href="/library"
+          className="text-base font-semibold tracking-tight truncate"
+        >
           YogaBlocks
         </Link>
 
