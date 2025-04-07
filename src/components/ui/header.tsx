@@ -1,4 +1,3 @@
-// src/components/ui/header.tsx
 import Link from "next/link";
 import { Menu, Search, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
