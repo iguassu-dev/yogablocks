@@ -9,7 +9,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b pt-safe-top">
       <div className="mx-auto flex h-14 max-w-screen-lg items-center gap-2 px-4 min-w-0 overflow-hidden">
         {/* ───── brand / home link ───── */}
-        <Link href="/library" className="truncate">
+        <Link href="/library" className="truncate text-center">
           <TypographyHeading3>YogaBlocks</TypographyHeading3>
         </Link>
 
