@@ -1,25 +1,30 @@
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import {
+  TypographyHeading1,
+  TypographyHeading2,
+  TypographyHeading3,
+  TypographyBody,
+  TypographyLink,
+  TypographyCaption,
+} from "@/components/ui/typography";
 
-export default function Home() {
+export default function LibraryPage() {
   return (
-    <main className="p-8 space-y-4">
-      {/* Tailwind Test */}
-      <div className="bg-red-500 text-white p-4 rounded-lg">
-        ✅ Tailwind is working
-      </div>
-
-      {/* Shadcn Button Test */}
-      <Button variant="default" className="flex items-center gap-2">
-        <Plus className="w-4 h-4" />
-        Create Asana
-      </Button>
-
-      {/* Info Text */}
-      <p className="text-muted-foreground text-sm">
-        You should see a red box, a styled button, and a plus icon. If you do,
-        you’re all set.
-      </p>
-    </main>
+    <div>
+      <TypographyHeading1>Welcome to the Library</TypographyHeading1>
+      <TypographyHeading2>
+        This is your personal yoga knowledge base.
+      </TypographyHeading2>
+      <TypographyHeading3>
+        Here you can store all your yoga knowledge, including poses, sequences,
+        and other information.
+      </TypographyHeading3>
+      <TypographyBody>
+        This is your personal yoga knowledge base.
+      </TypographyBody>
+      <TypographyLink href="/">Home</TypographyLink>
+      <TypographyCaption>
+        This is your personal yoga knowledge base.
+      </TypographyCaption>
+    </div>
   );
 }

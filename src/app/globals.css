@@ -120,3 +120,15 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* iOS notch support */
+@supports (padding: max(0px)) {
+  .pt-safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+/* make hash links land below sticky header */
+html {
+  scroll-padding-top: theme(spacing[16]); /* 4rem = 56px header + wiggle */
+}
