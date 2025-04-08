@@ -3,6 +3,7 @@
 import useUser from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { DocCard } from "@/components/ui/doc-card";
 
 export default function LibraryPage() {
   const { user, loading } = useUser();
@@ -21,7 +22,10 @@ export default function LibraryPage() {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold">Welcome to the Library!</h1>
-      {/* Add your asana listing here */}
+      <DocCard
+        title="Mountain Pose"
+        preview="Improves posture, strengthens thighs, knees, and ankles, firms abdomen and buttocks"
+      />
     </div>
   );
 }
