@@ -7,6 +7,7 @@ const config: Config = {
     "./components/**/*.{ts,tsx}",
   ],
   theme: {
+<<<<<<< HEAD
     extend: {
       fontSize: {
         xs: ["0.75rem", { lineHeight: "1rem" }],
@@ -18,6 +19,9 @@ const config: Config = {
         "3xl": ["1.875rem", { lineHeight: "2.25rem" }],
       },
     },
+=======
+    extend: {},
+>>>>>>> dev
     screens: {
       // Keep the defaults, but focus testing around 320-430px during Alpha
       xs: "375px",
