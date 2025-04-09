@@ -1,30 +1,85 @@
 "use client";
-const [searchText, setSearchText] = useState("");
 
-import useUser from "@/hooks/useUser";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { SearchInput } from "@/components/ui/search-input";
+import { useState, useEffect } from "react"; //fetch data from Supabase
+import useUser from "@/hooks/useUser"; //check user authentication
+import { useRouter } from "next/navigation"; //navigate to login page if not authenticated
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { DocCard } from "@/components/ui/doc-card";
 
 export default function LibraryPage() {
-  const { user, loading } = useUser();
+  const { user, loading: userLoading } = useUser();
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  type Asana = {
+    id: string;
+    title: string;
+    content: string;
+  };
+
+  const [asanas, setAsanas] = useState<Asana[]>([]);
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login"); // send user to login if not authenticated
+    if (!userLoading && !user) {
+      router.push("/login");
     }
-  }, [user, loading, router]);
+  }, [user, userLoading, router]);
 
-  if (loading || !user) {
-    return <p className="text-center mt-10">Loading...</p>;
+  useEffect(() => {
+    if (user) {
+      const fetchAsanas = async () => {
+        const supabase = createClientComponentClient();
+        const { data, error } = await supabase
+          .from("documents")
+          .select("id, title, content")
+          .eq("doc_type", "asana")
+          .order("title", { ascending: true });
+
+        if (error) {
+          setError(error.message);
+        } else {
+          setAsanas(data || []);
+        }
+        setLoading(false);
+      };
+
+      fetchAsanas();
+    }
+  }, [user]);
+
+  if (userLoading || loading) {
+    return (
+      <p className="text-center mt-10 text-muted-foreground">Loading...</p>
+    );
+  }
+
+  if (error) {
+    return (
+      <p className="text-center mt-10 text-destructive">
+        Error loading asanas: {error}
+      </p>
+    );
   }
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold">Welcome to the Library!</h1>
-      <SearchInput value={searchText} onChange={setSearchText} />
-      {/* Add your asana listing here */}
+    <div className="p-4 flex flex-col gap-4">
+      {asanas.length === 0 ? (
+        <p className="text-center text-muted-foreground">No asanas found.</p>
+      ) : (
+        asanas.map((asana) => (
+          <DocCard
+            key={asana.id}
+            title={asana.title}
+            preview={getPreview(asana.content)}
+          />
+        ))
+      )}
     </div>
   );
+}
+
+// Helper to extract a preview line from content
+function getPreview(content: string) {
+  const lines = content.split("\n").filter(Boolean);
+  return lines[1] || lines[0] || "";
 }
