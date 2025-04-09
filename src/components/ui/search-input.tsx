@@ -24,11 +24,11 @@ export function SearchInput({ value, onChange, onCancel }: SearchInputProps) {
       <div className="relative flex-1">
         <Input
           ref={inputRef}
-          type="search"
+          type="text"
           value={value}
           placeholder="Search..."
           onChange={(e) => onChange(e.target.value)}
-          className="pl-4 pr-10 py-2 rounded-full border border-input bg-background shadow-sm focus-visible:ring-0 focus-visible:ring-offset-0 text-sm"
+          className="pl-4 pr-10 py-2 rounded-6 border border-input bg-background focus-visible:ring-0 focus-visible:ring-offset-0 text-sm"
         />
         {/* ───── Clear (X) Button ───── */}
         {value && (
