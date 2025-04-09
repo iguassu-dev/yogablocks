@@ -2,32 +2,54 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface TypographyProps {
   children: React.ReactNode;
+  className?: string;
 }
 
 interface TypographyLinkProps extends TypographyProps {
   href: string;
 }
-export function TypographyHeading1({ children }: TypographyProps) {
-  return <h1 className="text-3xl font-semibold text-primary">{children}</h1>;
+export function TypographyHeading1({ children, className }: TypographyProps) {
+  return (
+    <h1 className={cn("text-3xl font-semibold text-primary", className)}>
+      {children}
+    </h1>
+  );
 }
 
-export function TypographyHeading2({ children }: TypographyProps) {
-  return <h2 className="text-2xl font-medium text-primary">{children}</h2>;
+export function TypographyHeading2({ children, className }: TypographyProps) {
+  return (
+    <h2 className={cn("text-2xl font-medium text-primary", className)}>
+      {children}
+    </h2>
+  );
 }
 
-export function TypographyHeading3({ children }: TypographyProps) {
-  return <h3 className="text-xl font-medium text-primary">{children}</h3>;
+export function TypographyHeading3({ children, className }: TypographyProps) {
+  return (
+    <h3 className={cn("text-xl font-medium text-primary", className)}>
+      {children}
+    </h3>
+  );
 }
 
-export function TypographyHeading4({ children }: TypographyProps) {
-  return <h4 className="text-base font-medium text-primary">{children}</h4>;
+export function TypographyHeading4({ children, className }: TypographyProps) {
+  return (
+    <h4 className={cn("text-base font-medium text-primary", className)}>
+      {children}
+    </h4>
+  );
 }
 
-export function TypographyBody({ children }: TypographyProps) {
-  return <p className="text-base font-normal text-primary">{children}</p>;
+export function TypographyBody({ children, className }: TypographyProps) {
+  return (
+    <p className={cn("text-base font-normal text-primary", className)}>
+      {children}
+    </p>
+  );
 }
 
 export function TypographyLink({ href, children }: TypographyLinkProps) {
@@ -40,9 +62,11 @@ export function TypographyLink({ href, children }: TypographyLinkProps) {
     </Link>
   );
 }
-export function TypographyCaption({ children }: TypographyProps) {
+export function TypographyCaption({ children, className }: TypographyProps) {
   return (
-    <small className="text-sm text-muted-foreground leading-none">
+    <small
+      className={cn("text-sm text-muted-foreground leading-none", className)}
+    >
       {children}
     </small>
   );
