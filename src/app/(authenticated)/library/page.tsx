@@ -29,11 +29,7 @@ export default function LibraryPage() {
     if (user) {
       const fetchAsanas = async () => {
         const supabase = createClientComponentClient();
-        const { data, error } = await supabase
-          .from("documents")
-          .select("id, title, content")
-          .eq("doc_type", "asana")
-          .order("title", { ascending: true });
+        const { data, error } = await supabase.from("documents").select("*");
 
         console.log("Fetched asanas:", data);
         console.log("Supabase error:", error);
