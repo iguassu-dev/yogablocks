@@ -6,16 +6,15 @@ import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { DocCard } from "@/components/ui/doc-card";
 import { useDebounce } from "use-debounce";
+import Header from "@/components/ui/header"; // bring back Header import
 
 export default function LibraryPage() {
   const { user, loading: userLoading } = useUser();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const [asanas, setAsanas] = useState<Asana[]>([]);
 
-  // 🆕 Search state
   const [searchValue, setSearchValue] = useState("");
   const [debouncedSearchValue] = useDebounce(searchValue, 300);
 
@@ -72,23 +71,26 @@ export default function LibraryPage() {
   }
 
   return (
-    <div className="p-4 flex flex-col gap-4">
-      {asanas.length === 0 ? (
-        <p className="text-center text-muted-foreground">No asanas found.</p>
-      ) : (
-        asanas.map((asana) => (
-          <DocCard
-            key={asana.id}
-            title={asana.title}
-            preview={getPreview(asana.content)}
-          />
-        ))
-      )}
-    </div>
+    <>
+      <Header searchValue={searchValue} setSearchValue={setSearchValue} />
+      <div className="p-4 flex flex-col gap-4">
+        {asanas.length === 0 ? (
+          <p className="text-center text-muted-foreground">No asanas found.</p>
+        ) : (
+          asanas.map((asana) => (
+            <DocCard
+              key={asana.id}
+              title={asana.title}
+              preview={getPreview(asana.content)}
+            />
+          ))
+        )}
+      </div>
+    </>
   );
 }
 
-// Helper to extract a preview line from content
+// Helper
 function getPreview(content: string) {
   const lines = content.split("\n").filter(Boolean);
   return lines[1] || lines[0] || "";

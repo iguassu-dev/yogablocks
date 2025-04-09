@@ -19,7 +19,7 @@ export function SearchInput({ value, onChange, onCancel }: SearchInputProps) {
   }, []);
 
   return (
-    <div className="flex items-center gap-2 w-full max-w-screen-lg px-4 pt-2 pb-2 mx-auto">
+    <div className="flex items-center gap-2 w-full max-w-screen-lg px-4 pt-2 pb-2 mx-auto transition-all duration-300 ease-in-out transform animate-fade-slide">
       {/* ───── Search Field ───── */}
       <div className="relative flex-1">
         <Input
