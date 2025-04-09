@@ -1,32 +1,13 @@
-<<<<<<< HEAD
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
-=======
 "use client";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { useRef, useEffect } from "react";
->>>>>>> 7691d2d (added search-input component)
 
 type SearchInputProps = {
   value: string;
   onChange: (value: string) => void;
-<<<<<<< HEAD
-};
-
-export function SearchInput({ value, onChange }: SearchInputProps) {
-  return (
-    <div className="relative">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-      <Input
-        className="pl-10"
-        placeholder="Search poses..."
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      />
-=======
   onCancel: () => void;
 };
 
@@ -71,7 +52,6 @@ export function SearchInput({ value, onChange, onCancel }: SearchInputProps) {
       >
         Cancel
       </Button>
->>>>>>> 7691d2d (added search-input component)
     </div>
   );
 }
