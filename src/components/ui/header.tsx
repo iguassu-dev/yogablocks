@@ -1,52 +1,48 @@
-"use client";
-
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TypographyHeading3 } from "@/components/ui/typography";
-import { SearchInput } from "@/components/ui/search-input"; // new import
-import { useState } from "react";
+import { SearchInput } from "./search-input";
 
-export default function Header() {
-  const [searchActive, setSearchActive] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
+type HeaderProps = {
+  searchValue?: string;
+  setSearchValue?: (value: string) => void;
+};
 
+export default function Header({ searchValue, setSearchValue }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b pt-safe-top">
       <div className="mx-auto flex h-14 max-w-screen-lg items-center gap-2 px-4 min-w-0 overflow-hidden">
-        {searchActive ? (
+        {searchValue !== undefined && setSearchValue !== undefined ? (
           <>
-            {/* ───── Mobile Search Active ───── */}
+            {/* 🆕 Mobile search bar */}
             <SearchInput
-              value={searchValue}
-              onChange={setSearchValue}
+              value={searchValue || ""}
+              onChange={setSearchValue || (() => {})}
               onCancel={() => {
-                setSearchValue("");
-                setSearchActive(false);
+                setSearchValue?.("");
+                // Optionally: you might want to navigate or reset something here later
               }}
             />
           </>
         ) : (
           <>
-            {/* ───── Normal Header Mode ───── */}
+            {/* 🧹 Default Header: Brand and Search Button */}
             <Link href="/library" className="truncate text-center">
               <TypographyHeading3>YogaBlocks</TypographyHeading3>
             </Link>
 
             <div className="flex-1" />
 
-            {/* ───── Desktop Search (hidden for now) ───── */}
-            <div className="hidden w-full max-w-sm md:block">
-              {/* you can add desktop search input later */}
-            </div>
-
-            {/* ───── Mobile Search Icon ───── */}
+            {/* Mobile search icon */}
             <Button
               variant="ghost"
               size="icon"
-              aria-label="Search"
               className="md:hidden"
-              onClick={() => setSearchActive(true)}
+              aria-label="Search"
+              onClick={() => {
+                // Maybe later toggle mobile search open
+              }}
             >
               <Search className="h-5 w-5" />
             </Button>
