@@ -35,6 +35,9 @@ export default function LibraryPage() {
           .eq("doc_type", "asana")
           .order("title", { ascending: true });
 
+        console.log("Fetched asanas:", data);
+        console.log("Supabase error:", error);
+
         if (error) {
           setError(error.message);
         } else {
