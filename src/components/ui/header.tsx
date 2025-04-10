@@ -6,7 +6,7 @@
 "use client";
 
 import Link from "next/link";
-import { Search, X } from "lucide-react";
+import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TypographyHeading3 } from "@/components/ui/typography";
 import { useHeader } from "@/hooks/useHeader";

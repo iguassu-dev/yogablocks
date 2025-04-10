@@ -2,21 +2,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import useUser from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { DocCard } from "@/components/ui/doc-card";
+import useUser from "@/hooks/useUser";
 import { useDebounce } from "use-debounce";
-import Header from "@/components/ui/header"; // bring back Header import
+import { DocCard } from "@/components/ui/doc-card";
+import { useHeader } from "@/hooks/useHeader";
 
 export default function LibraryPage() {
   const { user, loading: userLoading } = useUser();
   const router = useRouter();
+  const { setMode, setIsSearchOpen, searchValue } = useHeader(); // <-- Destructure what you need
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [asanas, setAsanas] = useState<Asana[]>([]);
 
-  const [searchValue, setSearchValue] = useState("");
   const [debouncedSearchValue] = useDebounce(searchValue, 300);
 
   type Asana = {
@@ -25,37 +26,48 @@ export default function LibraryPage() {
     content: string;
   };
 
+  // Force Library Mode on Mount
+  useEffect(() => {
+    setMode("library");
+    setIsSearchOpen(false);
+  }, [setMode, setIsSearchOpen]);
+
+  // Protect route if no user
   useEffect(() => {
     if (!userLoading && !user) {
       router.push("/login");
     }
   }, [user, userLoading, router]);
 
+  // Fetch asanas
   useEffect(() => {
+    async function fetchData() {
+      const supabase = createClientComponentClient();
+      let query = supabase
+        .from("documents")
+        .select("*")
+        .eq("doc_type", "asana");
+
+      if (debouncedSearchValue) {
+        query = query.or(
+          `title.ilike.%${debouncedSearchValue}%,content.ilike.%${debouncedSearchValue}%`
+        );
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        setError(error.message);
+      } else {
+        setAsanas(data || []);
+      }
+      setLoading(false);
+    }
+
     if (user) {
-      fetchAsanas(debouncedSearchValue);
+      fetchData();
     }
   }, [user, debouncedSearchValue]);
-
-  async function fetchAsanas(searchTerm?: string) {
-    const supabase = createClientComponentClient();
-    let query = supabase.from("documents").select("*").eq("doc_type", "asana");
-
-    if (searchTerm) {
-      query = query.or(
-        `title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`
-      );
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      setError(error.message);
-    } else {
-      setAsanas(data || []);
-    }
-    setLoading(false);
-  }
 
   if (userLoading || loading) {
     return (
@@ -73,7 +85,6 @@ export default function LibraryPage() {
 
   return (
     <>
-      <Header searchValue={searchValue} setSearchValue={setSearchValue} />
       <div className="p-4 flex flex-col gap-4">
         {asanas.length === 0 ? (
           <p className="text-center text-muted-foreground">No asanas found.</p>
