@@ -13,4 +13,13 @@ const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
 ];
 
+/** @type {import('eslint').Linter.FlatConfig[]} */
+const config = [
+  {
+    ignores: [".next/**"],
+    // (Other existing config like rules, plugins, extends, etc.)
+  },
+  // (Your other config blocks if you have any)
+];
+
 export default eslintConfig;

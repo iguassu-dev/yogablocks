@@ -5,13 +5,15 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import useUser from "@/hooks/useUser";
+import { useHeader } from "@/hooks/useHeader";
 import { useDebounce } from "use-debounce";
 import { DocCard } from "@/components/ui/doc-card";
-import { useHeader } from "@/hooks/useHeader";
+import { FAB } from "@/components/ui/FAB";
 
 export default function LibraryPage() {
   const { user, loading: userLoading } = useUser();
   const router = useRouter();
+
   const { setMode, setIsSearchOpen, searchValue } = useHeader(); // <-- Destructure what you need
 
   const [loading, setLoading] = useState(true);
@@ -84,8 +86,8 @@ export default function LibraryPage() {
   }
 
   return (
-    <>
-      <div className="p-4 flex flex-col gap-4">
+    <main className="relative min-h-screen">
+      <div className="p-4 flex flex-col gap-4 pb-24">
         {asanas.length === 0 ? (
           <p className="text-center text-muted-foreground">No asanas found.</p>
         ) : (
@@ -98,7 +100,12 @@ export default function LibraryPage() {
           ))
         )}
       </div>
-    </>
+
+      {/* Floating Action Button now absolute, inside main */}
+      <div className="absolute bottom-6 right-6">
+        <FAB variant="create" href="/library/create" />
+      </div>
+    </main>
   );
 }
 

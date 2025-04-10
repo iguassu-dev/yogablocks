@@ -1,6 +1,9 @@
 // Document detail page
 // src/app/(authenticated)/library/create/page.tsx
 "use client";
+// import { FAB } from "@/components/ui/FAB";
+
+// <FAB variant="edit" href={`/library/edit/${docId}`} />
 
 export default function CreatePage() {
   return (
