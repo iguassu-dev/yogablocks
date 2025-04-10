@@ -1,3 +1,6 @@
+//This is where your sticky Header, main, and general app layout structure lives.
+// It should be used inside authenticated layouts, NOT directly under /app/layout.tsx, because /login and /signup pages don’t need the sticky header.
+
 import Header from "@/components/ui/header";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
