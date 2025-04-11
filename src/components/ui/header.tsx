@@ -26,7 +26,7 @@ export default function Header() {
   const router = useRouter();
 
   return (
-    <header className="sticky top-0 z-50 bg-background/95 supports-[backdrop-filter]:bg-background/60 border-b pt-safe-top">
+    <header className="sticky top-0 z-50 bg-background supports-[backdrop-filter]:bg-background border-b pt-safe-top">
       <div className="mx-auto flex h-14 max-w-screen-lg items-center gap-2 px-4 min-w-0 overflow-hidden">
         {/* Handle Library Mode */}
         {mode === "library" && (
@@ -60,7 +60,7 @@ export default function Header() {
                     aria-label="Open search"
                     onClick={() => setIsSearchOpen(true)}
                   >
-                    <Search className="h-5 w-5" />
+                    <Search className="h-6 w-6" />
                   </Button>
                 </div>
               </>
@@ -78,7 +78,7 @@ export default function Header() {
               className="shrink-0 h-10 w-10"
               onClick={() => router.back()}
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-6 w-6" />
             </Button>
 
             {/* Title */}
@@ -97,7 +97,7 @@ export default function Header() {
 
             {/* Options ("...") button */}
             <Button variant="ghost" size="icon" className="shrink-0 h-10 w-10">
-              <MoreVertical className="h-5 w-5" />
+              <MoreVertical className="h-6 w-6" />
             </Button>
           </>
         )}

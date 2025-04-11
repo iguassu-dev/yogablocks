@@ -65,7 +65,7 @@ export function TypographyLink({ href, children }: TypographyLinkProps) {
 export function TypographyCaption({ children, className }: TypographyProps) {
   return (
     <small
-      className={cn("text-sm text-muted-foreground leading-none", className)}
+      className={cn("text-sm text-muted-foreground leading-tight", className)}
     >
       {children}
     </small>

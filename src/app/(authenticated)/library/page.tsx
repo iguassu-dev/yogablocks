@@ -114,5 +114,7 @@ export default function LibraryPage() {
 // Helper
 function getPreview(content: string) {
   const lines = content.split("\n").filter(Boolean);
-  return lines[1] || lines[0] || "";
+  if (lines.length === 0) return "";
+  if (lines.length === 1) return lines[0];
+  return `${lines[0]}\n${lines[1]}`;
 }
