@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Plus, Pencil } from "lucide-react";
+import { CirclePlus, Pencil, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -20,7 +20,7 @@ export function FAB({ variant, href, className }: FABProps) {
       <Button
         size="icon"
         className={cn(
-          "fixed bottom-6 right-6 rounded-6 shadow-lg p-4",
+          "fixed bottom-6 right-6 rounded-6 shadow-lg p-4 h-14 w-14",
           isCreate
             ? "bg-purple-600 hover:bg-purple-700 text-white"
             : "bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-300",
@@ -28,9 +28,9 @@ export function FAB({ variant, href, className }: FABProps) {
         )}
       >
         {isCreate ? (
-          <Plus className="h-14 w-14" />
+          <CirclePlus className="h-6 w-6" />
         ) : (
-          <Pencil className="h-14 w-14" />
+          <Pencil className="h-6 w-6" />
         )}
       </Button>
     </Link>
