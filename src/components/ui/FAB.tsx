@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { CirclePlus, Pencil, Plus } from "lucide-react";
+import { CirclePlus, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
