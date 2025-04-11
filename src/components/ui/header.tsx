@@ -8,10 +8,12 @@
 import Link from "next/link";
 import { Search, ArrowLeft, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { TypographyHeading3 } from "@/components/ui/typography";
+import { TypographyBody, TypographyHeading3 } from "@/components/ui/typography";
 import { useHeader } from "@/hooks/useHeader";
 import { SearchInput } from "@/components/ui/search-input";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+
 export default function Header() {
   const {
     mode,
@@ -24,11 +26,15 @@ export default function Header() {
   const router = useRouter();
 
   return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b pt-safe-top">
+    <header className="sticky top-0 z-50 bg-background/95 supports-[backdrop-filter]:bg-background/60 border-b pt-safe-top">
       <div className="mx-auto flex h-14 max-w-screen-lg items-center gap-2 px-4 min-w-0 overflow-hidden">
         {/* Handle Library Mode */}
         {mode === "library" && (
           <>
+            {/* Left spacer to balance layout */}
+            <div className="flex-1" />
+
+            {/* Search Input */}
             {isSearchOpen ? (
               <SearchInput
                 value={searchValue}
@@ -40,21 +46,23 @@ export default function Header() {
               />
             ) : (
               <>
+                {/* Centered Title */}
                 <Link href="/library" className="truncate text-center">
                   <TypographyHeading3>YogaBlocks</TypographyHeading3>
                 </Link>
 
-                <div className="flex-1" />
-
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="md:hidden"
-                  aria-label="Open search"
-                  onClick={() => setIsSearchOpen(true)}
-                >
-                  <Search className="h-5 w-5" />
-                </Button>
+                {/* Right side */}
+                <div className="flex-1 flex justify-end">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="md:hidden"
+                    aria-label="Open search"
+                    onClick={() => setIsSearchOpen(true)}
+                  >
+                    <Search className="h-5 w-5" />
+                  </Button>
+                </div>
               </>
             )}
           </>
@@ -67,19 +75,28 @@ export default function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="shrink-0"
+              className="shrink-0 h-10 w-10"
               onClick={() => router.back()}
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
 
             {/* Title */}
-            <div className="flex-1 truncate text-center">
-              <TypographyHeading3>{title}</TypographyHeading3>
+            <div className="flex-1 truncate text-left">
+              <motion.div
+                key={title} // important: keying by title triggers animation
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="truncate text-left"
+              >
+                <TypographyBody>{title}</TypographyBody>
+              </motion.div>
             </div>
 
             {/* Options ("...") button */}
-            <Button variant="ghost" size="icon" className="shrink-0">
+            <Button variant="ghost" size="icon" className="shrink-0 h-10 w-10">
               <MoreVertical className="h-5 w-5" />
             </Button>
           </>
