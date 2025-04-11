@@ -6,15 +6,22 @@
 "use client";
 
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, ArrowLeft, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TypographyHeading3 } from "@/components/ui/typography";
 import { useHeader } from "@/hooks/useHeader";
 import { SearchInput } from "@/components/ui/search-input";
-
+import { useRouter } from "next/navigation";
 export default function Header() {
-  const { mode, isSearchOpen, setIsSearchOpen, searchValue, setSearchValue } =
-    useHeader();
+  const {
+    mode,
+    isSearchOpen,
+    setIsSearchOpen,
+    searchValue,
+    setSearchValue,
+    title,
+  } = useHeader();
+  const router = useRouter();
 
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b pt-safe-top">
@@ -55,9 +62,27 @@ export default function Header() {
 
         {/* Handle Doc View Mode */}
         {mode === "docView" && (
-          <Link href="/library" className="truncate text-center">
-            <TypographyHeading3>YogaBlocks</TypographyHeading3>
-          </Link>
+          <>
+            {/* Back button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="shrink-0"
+              onClick={() => router.back()}
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+
+            {/* Title */}
+            <div className="flex-1 truncate text-center">
+              <TypographyHeading3>{title}</TypographyHeading3>
+            </div>
+
+            {/* Options ("...") button */}
+            <Button variant="ghost" size="icon" className="shrink-0">
+              <MoreVertical className="h-5 w-5" />
+            </Button>
+          </>
         )}
 
         {/* Handle Doc Edit Mode */}

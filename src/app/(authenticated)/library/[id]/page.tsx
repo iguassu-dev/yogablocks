@@ -8,9 +8,11 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation"; //useParams() grabs id from URL like /library/abcd-1234
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { TypographyHeading1, TypographyBody } from "@/components/ui/typography";
+import { useHeader } from "@/hooks/useHeader";
 
 export default function DocumentDetailPage() {
   const { id } = useParams();
+  const { setMode, setTitle } = useHeader();
   const [document, setDocument] = useState<Document | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,20 +30,26 @@ export default function DocumentDetailPage() {
         .from("documents")
         .select("*")
         .eq("id", id)
-        .single(); // <- Fetches the matching document & expects exactly one
+        .single();
 
       if (error) {
         setError(error.message);
       } else {
         setDocument(data);
+        setTitle(data.title); // <-- SET THE HEADER TITLE TO DOCUMENT TITLE
       }
       setLoading(false);
     }
 
     if (id) {
       fetchDocument();
+      setMode("docView"); // Make sure Header switches to docView mode
     }
-  }, [id]);
+
+    return () => {
+      setTitle("YogaBlocks"); // Cleanup: when leaving the page, reset title
+    };
+  }, [id, setMode, setTitle]);
 
   if (loading) {
     return (

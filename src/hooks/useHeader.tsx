@@ -1,24 +1,37 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState } from "react";
 
-type HeaderMode = "library" | "docView" | "docEdit";
-
-interface HeaderContextType {
-  mode: HeaderMode;
-  setMode: (mode: HeaderMode) => void;
+// ─────────────────────────────────────────────
+// 1. Define TypeScript types for the header context
+// ─────────────────────────────────────────────
+type HeaderContextType = {
+  mode: "library" | "docView" | "docEdit";
+  setMode: (mode: "library" | "docView" | "docEdit") => void;
   isSearchOpen: boolean;
-  setIsSearchOpen: (open: boolean) => void;
+  setIsSearchOpen: (isOpen: boolean) => void;
   searchValue: string;
   setSearchValue: (value: string) => void;
-}
+  title: string;
+  setTitle: (title: string) => void;
+};
 
+// ─────────────────────────────────────────────
+// 2. Create the context (initially undefined)
+// ─────────────────────────────────────────────
 const HeaderContext = createContext<HeaderContextType | undefined>(undefined);
 
-export function HeaderProvider({ children }: { children: ReactNode }) {
-  const [mode, setMode] = useState<HeaderMode>("docView");
+// ─────────────────────────────────────────────
+// 3. Create the Provider component to wrap the app
+// ─────────────────────────────────────────────
+export function HeaderProvider({ children }: { children: React.ReactNode }) {
+  // Define all shared state
+  const [mode, setMode] = useState<"library" | "docView" | "docEdit">(
+    "library"
+  );
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [title, setTitle] = useState("YogaBlocks");
 
   return (
     <HeaderContext.Provider
@@ -29,6 +42,8 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
         setIsSearchOpen,
         searchValue,
         setSearchValue,
+        title,
+        setTitle,
       }}
     >
       {children}
@@ -36,6 +51,9 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// ─────────────────────────────────────────────
+// 4. Create a custom hook to consume the context
+// ─────────────────────────────────────────────
 export function useHeader() {
   const context = useContext(HeaderContext);
   if (context === undefined) {
