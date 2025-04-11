@@ -1,7 +1,7 @@
 import {
   TypographyHeading4,
   TypographyCaption,
-} from "@/components/ui/typography"; // adjust import if needed
+} from "@/components/ui/typography";
 import { Triangle } from "lucide-react"; // placeholder for asana
 
 type DocCardProps = {
@@ -19,7 +19,6 @@ export function DocCard({ title, preview }: DocCardProps) {
       {/* Title and Preview */}
       <div className="flex-1 flex flex-col items-start">
         <TypographyHeading4 className="w-full">{title}</TypographyHeading4>
-
         <TypographyCaption className="w-full line-clamp-2 text-muted-foreground">
           {preview}
         </TypographyCaption>
