@@ -1,6 +1,7 @@
 // library home page
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
@@ -92,16 +93,17 @@ export default function LibraryPage() {
           <p className="text-center text-muted-foreground">No asanas found.</p>
         ) : (
           asanas.map((asana) => (
-            <DocCard
-              key={asana.id}
-              title={asana.title}
-              preview={getPreview(asana.content)}
-            />
+            <Link key={asana.id} href={`/library/${asana.id}`}>
+              <DocCard
+                title={asana.title}
+                preview={getPreview(asana.content)}
+              />
+            </Link>
           ))
         )}
       </div>
 
-      {/* Floating Action Button now absolute, inside main */}
+      {/* Floating Action Button positioned absolute, inside main */}
       <div className="absolute bottom-6 right-6">
         <FAB variant="create" href="/library/create" />
       </div>
