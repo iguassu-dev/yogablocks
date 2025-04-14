@@ -8,8 +8,9 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import useUser from "@/hooks/useUser";
 import { useHeader } from "@/hooks/useHeader";
 import { useDebounce } from "use-debounce";
-import { DocCard } from "@/components/ui/doc-card"; // <--- still using DocCard
+import { DocCard } from "@/components/ui/doc-card";
 import { FAB } from "@/components/ui/FAB";
+import { getPreview } from "@/lib/utils";
 
 export default function LibraryPage() {
   const { user, loading: userLoading } = useUser();
@@ -89,7 +90,7 @@ export default function LibraryPage() {
         ) : (
           asanas.map((asana) => (
             <Link key={asana.id} href={`/library/${asana.id}`}>
-              {/* ⬇️ UPDATED: Pass showPlusIcon = false explicitly */}
+              {/* Pass showPlusIcon = false explicitly */}
               <DocCard
                 title={asana.title}
                 preview={getPreview(asana.content)}
@@ -106,12 +107,4 @@ export default function LibraryPage() {
       </div>
     </main>
   );
-}
-
-// Helper
-function getPreview(content: string) {
-  const lines = content.split("\n").filter(Boolean);
-  if (lines.length === 0) return "";
-  if (lines.length === 1) return lines[0];
-  return `${lines[0]}\n${lines[1]}`;
 }

@@ -6,6 +6,7 @@ import { useHeader } from "@/hooks/useHeader";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useEffect, useState } from "react";
 import { DocCard } from "@/components/ui/doc-card";
+import { getPreview } from "@/lib/utils";
 
 type Document = {
   id: string;
@@ -74,12 +75,4 @@ export function LibraryDrawer() {
       </DialogContent>
     </Dialog>
   );
-}
-
-// Helper
-function getPreview(content: string) {
-  const lines = content.split("\n").filter(Boolean);
-  if (lines.length === 0) return "";
-  if (lines.length === 1) return lines[0];
-  return `${lines[0]}\n${lines[1]}`;
 }
