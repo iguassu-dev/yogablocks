@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 // ─────────────────────────────────────────────
 // 1. Define TypeScript types for the header context
@@ -35,6 +36,21 @@ export function HeaderProvider({ children }: { children: React.ReactNode }) {
   const [searchValue, setSearchValue] = useState("");
   const [title, setTitle] = useState("YogaBlocks");
   const [isLibraryDrawerOpen, setIsLibraryDrawerOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Set mode based on pathname
+  useEffect(() => {
+    if (pathname.startsWith("/library/edit/")) {
+      setMode("docEdit");
+    } else if (
+      pathname.startsWith("/library/") &&
+      pathname.split("/").length === 3
+    ) {
+      setMode("docView");
+    } else {
+      setMode("library");
+    }
+  }, [pathname]);
 
   return (
     <HeaderContext.Provider
