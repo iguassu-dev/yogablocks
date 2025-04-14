@@ -1,37 +1,24 @@
-// Overlay for inserting links
 "use client";
 
-// ─────────────────────────────────────────────
-// 1. Import dependencies
-// ─────────────────────────────────────────────
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useHeader } from "@/hooks/useHeader";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useEffect, useState } from "react";
+import { DocCard } from "@/components/ui/doc-card";
 
-// ─────────────────────────────────────────────
-// 2. Define the Document type
-// ─────────────────────────────────────────────
 type Document = {
   id: string;
   title: string;
   content: string;
 };
 
-// ─────────────────────────────────────────────
-// 3. Define the LibraryDrawer component
-// ─────────────────────────────────────────────
 export function LibraryDrawer() {
   const { isLibraryDrawerOpen, setIsLibraryDrawerOpen } = useHeader();
   const supabase = createClientComponentClient();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // ─────────────────────────────────────────────
-  // 4. Fetch documents when the drawer is opened
-  // ─────────────────────────────────────────────
   useEffect(() => {
     async function fetchDocuments() {
       const { data, error } = await supabase
@@ -52,16 +39,10 @@ export function LibraryDrawer() {
     }
   }, [isLibraryDrawerOpen, supabase]);
 
-  // ─────────────────────────────────────────────
-  // 5. Filter documents based on search query
-  // ─────────────────────────────────────────────
   const filteredDocuments = documents.filter((doc) =>
     doc.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // ─────────────────────────────────────────────
-  // 6. Render the component
-  // ─────────────────────────────────────────────
   return (
     <Dialog open={isLibraryDrawerOpen} onOpenChange={setIsLibraryDrawerOpen}>
       <DialogContent className="h-full w-full max-w-screen-sm flex flex-col p-4">
@@ -76,18 +57,15 @@ export function LibraryDrawer() {
         {/* Document List */}
         <div className="flex-1 overflow-y-auto flex flex-col gap-2">
           {filteredDocuments.length > 0 ? (
-            // If documents exist → render each one as a ghost Button.
             filteredDocuments.map((doc) => (
-              <Button
+              <DocCard
                 key={doc.id}
-                variant="ghost"
-                className="w-full justify-start"
-              >
-                {doc.title}
-              </Button>
+                title={doc.title}
+                preview={getPreview(doc.content)}
+                showPlusIcon={true} // Show Plus Icon inside Drawer
+              />
             ))
           ) : (
-            // If no documents exist → render a message.
             <div className="text-center text-muted-foreground mt-10">
               No documents found.
             </div>
@@ -96,4 +74,12 @@ export function LibraryDrawer() {
       </DialogContent>
     </Dialog>
   );
+}
+
+// Helper
+function getPreview(content: string) {
+  const lines = content.split("\n").filter(Boolean);
+  if (lines.length === 0) return "";
+  if (lines.length === 1) return lines[0];
+  return `${lines[0]}\n${lines[1]}`;
 }

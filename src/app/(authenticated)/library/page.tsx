@@ -8,19 +8,17 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import useUser from "@/hooks/useUser";
 import { useHeader } from "@/hooks/useHeader";
 import { useDebounce } from "use-debounce";
-import { DocCard } from "@/components/ui/doc-card";
+import { DocCard } from "@/components/ui/doc-card"; // <--- still using DocCard
 import { FAB } from "@/components/ui/FAB";
 
 export default function LibraryPage() {
   const { user, loading: userLoading } = useUser();
   const router = useRouter();
-
-  const { setMode, setIsSearchOpen, searchValue } = useHeader(); // <-- Destructure what you need
+  const { setMode, setIsSearchOpen, searchValue } = useHeader();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [asanas, setAsanas] = useState<Asana[]>([]);
-
   const [debouncedSearchValue] = useDebounce(searchValue, 300);
 
   type Asana = {
@@ -29,20 +27,17 @@ export default function LibraryPage() {
     content: string;
   };
 
-  // Force Library Mode on Mount
   useEffect(() => {
     setMode("library");
     setIsSearchOpen(false);
   }, [setMode, setIsSearchOpen]);
 
-  // Protect route if no user
   useEffect(() => {
     if (!userLoading && !user) {
       router.push("/login");
     }
   }, [user, userLoading, router]);
 
-  // Fetch asanas
   useEffect(() => {
     async function fetchData() {
       const supabase = createClientComponentClient();
@@ -94,16 +89,18 @@ export default function LibraryPage() {
         ) : (
           asanas.map((asana) => (
             <Link key={asana.id} href={`/library/${asana.id}`}>
+              {/* ⬇️ UPDATED: Pass showPlusIcon = false explicitly */}
               <DocCard
                 title={asana.title}
                 preview={getPreview(asana.content)}
+                showPlusIcon={false}
               />
             </Link>
           ))
         )}
       </div>
 
-      {/* Floating Action Button positioned absolute, inside main */}
+      {/* Floating Action Button */}
       <div className="absolute bottom-6 right-6">
         <FAB variant="create" href="/library/create" />
       </div>
