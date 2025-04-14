@@ -14,6 +14,8 @@ type HeaderContextType = {
   setSearchValue: (value: string) => void;
   title: string;
   setTitle: (title: string) => void;
+  isLibraryDrawerOpen: boolean;
+  setIsLibraryDrawerOpen: (isOpen: boolean) => void;
 };
 
 // ─────────────────────────────────────────────
@@ -32,6 +34,7 @@ export function HeaderProvider({ children }: { children: React.ReactNode }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [title, setTitle] = useState("YogaBlocks");
+  const [isLibraryDrawerOpen, setIsLibraryDrawerOpen] = useState(false);
 
   return (
     <HeaderContext.Provider
@@ -44,6 +47,8 @@ export function HeaderProvider({ children }: { children: React.ReactNode }) {
         setSearchValue,
         title,
         setTitle,
+        isLibraryDrawerOpen,
+        setIsLibraryDrawerOpen,
       }}
     >
       {children}
