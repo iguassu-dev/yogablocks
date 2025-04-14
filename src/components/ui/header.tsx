@@ -23,7 +23,6 @@ export default function Header() {
     searchValue,
     setSearchValue,
     title,
-    isLibraryDrawerOpen,
     setIsLibraryDrawerOpen,
   } = useHeader();
   const router = useRouter();
