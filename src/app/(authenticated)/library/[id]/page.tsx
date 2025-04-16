@@ -6,7 +6,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation"; //useParams() grabs id from URL like /library/abcd-1234
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import supabase from "@/lib/supabaseClient";
 import { TypographyHeading1, TypographyBody } from "@/components/ui/typography";
 import { useHeader } from "@/hooks/useHeader";
 
@@ -25,7 +25,6 @@ export default function DocumentDetailPage() {
 
   useEffect(() => {
     async function fetchDocument() {
-      const supabase = createClientComponentClient();
       const { data, error } = await supabase
         .from("documents")
         .select("*")

@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import supabase from "@/lib/supabaseClient";
 import useUser from "@/hooks/useUser";
 import { useHeader } from "@/hooks/useHeader";
 import { useDebounce } from "use-debounce";
@@ -41,7 +41,6 @@ export default function LibraryPage() {
 
   useEffect(() => {
     async function fetchData() {
-      const supabase = createClientComponentClient();
       let query = supabase
         .from("documents")
         .select("*")

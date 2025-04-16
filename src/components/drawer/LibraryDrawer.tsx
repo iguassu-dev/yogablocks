@@ -3,7 +3,7 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useHeader } from "@/hooks/useHeader";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import supabase from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
 import { DocCard } from "@/components/ui/doc-card";
 import { getPreview } from "@/lib/utils";
@@ -16,7 +16,6 @@ type Document = {
 
 export function LibraryDrawer() {
   const { isLibraryDrawerOpen, setIsLibraryDrawerOpen } = useHeader();
-  const supabase = createClientComponentClient();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 

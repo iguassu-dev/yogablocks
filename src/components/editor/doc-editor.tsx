@@ -23,8 +23,6 @@ export function DocEditor({
   saving = false,
   mode = "create",
 }: DocEditorProps) {
-  const router = useRouter();
-
   // ── Local editable state ─────────────────────
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
