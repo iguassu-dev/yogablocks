@@ -1,72 +1,76 @@
 // Edit existing document page
+// src/app/(authenticated)/library/edit/[id]/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import supabase from "@/lib/supabaseClient";
+import { DocEditor } from "@/components/editor/doc-editor";
 
 export default function EditAsanaPage() {
   const router = useRouter();
   const params = useParams();
-  const supabase = createClientComponentClient();
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const documentId = params.id as string;
 
-  const documentId = params.id as string; // 'id' comes from URL
+  const [initialTitle, setInitialTitle] = useState("");
+  const [initialContent, setInitialContent] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
+  // ─── Load document on mount ───
   useEffect(() => {
-    async function fetchDocument() {
+    async function fetchDoc() {
       const { data, error } = await supabase
         .from("documents")
-        .select("*")
+        .select("title, content")
         .eq("id", documentId)
         .single();
 
       if (data) {
-        setTitle(data.title);
-        setContent(data.content);
+        setInitialTitle(data.title);
+        setInitialContent(data.content);
       } else {
-        console.error(error);
+        console.error("Error fetching doc:", error);
+        router.push("/library");
       }
+
+      setLoading(false);
     }
 
-    fetchDocument();
-  }, [documentId, supabase]);
+    if (documentId) fetchDoc();
+  }, [documentId, router]);
 
-  async function handleSave() {
+  // ─── Update handler ───
+  const handleUpdate = async (title: string, content: string) => {
+    setSaving(true);
+
     const { error } = await supabase
       .from("documents")
-      .update({
-        title,
-        content,
-      })
+      .update({ title, content, updated_at: new Date().toISOString() })
       .eq("id", documentId);
 
-    if (error) {
-      console.error(error);
-      return;
-    }
+    setSaving(false);
 
-    router.push("/library"); // after saving, go back to Library
+    if (error) {
+      console.error("Error saving changes:", error);
+    } else {
+      router.push(`/library/${documentId}`);
+    }
+  };
+
+  if (loading) {
+    return (
+      <p className="p-4 text-muted-foreground text-sm">Loading document...</p>
+    );
   }
 
   return (
-    <main className="p-4 flex flex-col gap-4">
-      <Input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Title"
-      />
-      <Textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Content"
-        className="h-80"
-      />
-      <Button onClick={handleSave}>Save</Button>
-    </main>
+    <DocEditor
+      mode="edit"
+      initialTitle={initialTitle}
+      initialContent={initialContent}
+      onSave={handleUpdate}
+      saving={saving}
+    />
   );
 }

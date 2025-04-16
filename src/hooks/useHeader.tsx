@@ -1,3 +1,5 @@
+// src/hooks/useHeader.tsx
+
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
@@ -7,8 +9,8 @@ import { usePathname } from "next/navigation";
 // 1. Define TypeScript types for the header context
 // ─────────────────────────────────────────────
 type HeaderContextType = {
-  mode: "library" | "docView" | "docEdit";
-  setMode: (mode: "library" | "docView" | "docEdit") => void;
+  mode: "library" | "docView" | "docEdit" | "docCreate";
+  setMode: (mode: "library" | "docView" | "docEdit" | "docCreate") => void;
   isSearchOpen: boolean;
   setIsSearchOpen: (isOpen: boolean) => void;
   searchValue: string;
@@ -29,9 +31,9 @@ const HeaderContext = createContext<HeaderContextType | undefined>(undefined);
 // ─────────────────────────────────────────────
 export function HeaderProvider({ children }: { children: React.ReactNode }) {
   // Define all shared state
-  const [mode, setMode] = useState<"library" | "docView" | "docEdit">(
-    "library"
-  );
+  const [mode, setMode] = useState<
+    "library" | "docView" | "docEdit" | "docCreate"
+  >("library");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [title, setTitle] = useState("YogaBlocks");
@@ -42,6 +44,8 @@ export function HeaderProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (pathname.startsWith("/library/edit/")) {
       setMode("docEdit");
+    } else if (pathname.startsWith("/library/create")) {
+      setMode("docCreate");
     } else if (
       pathname.startsWith("/library/") &&
       pathname.split("/").length === 3

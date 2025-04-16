@@ -1,3 +1,5 @@
+// src/components/ui/header.tsx
+
 // When in library mode and isSearchOpen = false, Show brand title + search icon
 // When in library mode and isSearchOpen = true, Show full search input
 // When in docView mode, Show brand title
@@ -108,7 +110,6 @@ export default function Header() {
               </Button>
             </>
           )}
-
           {/* Handle Doc Edit Mode */}
           {mode === "docEdit" && (
             <>
@@ -133,6 +134,55 @@ export default function Header() {
                   className="truncate text-left"
                 >
                   <TypographyBody>{title}</TypographyBody>
+                </motion.div>
+              </div>
+
+              {/* Library button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="shrink-0 h-10 w-10"
+                onClick={() => setIsLibraryDrawerOpen(true)}
+              >
+                <Library className="h-6 w-6" />
+              </Button>
+
+              {/* More options button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="shrink-0 h-10 w-10"
+                onClick={() => {
+                  console.log("Open More Options Menu");
+                }}
+              >
+                <MoreVertical className="h-6 w-6" />
+              </Button>
+            </>
+          )}
+
+          {/* Handle Doc Create Mode */}
+          {mode === "docCreate" && (
+            <>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="shrink-0 h-10 w-10"
+                onClick={() => router.back()}
+              >
+                <ArrowLeft className="h-6 w-6" />
+              </Button>
+
+              <div className="flex-1 truncate text-left">
+                <motion.div
+                  key="new-document"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="truncate text-left"
+                >
+                  <TypographyBody>New Document</TypographyBody>
                 </motion.div>
               </div>
 
