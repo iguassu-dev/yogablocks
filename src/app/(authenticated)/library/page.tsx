@@ -11,6 +11,7 @@ import { useDebounce } from "use-debounce";
 import { DocCard } from "@/components/ui/doc-card";
 import { FAB } from "@/components/ui/FAB";
 import { getPreview } from "@/lib/utils";
+import { PageContainer } from "@/components/layouts/page-container";
 
 export default function LibraryPage() {
   const { user, loading: userLoading } = useUser();
@@ -83,13 +84,12 @@ export default function LibraryPage() {
 
   return (
     <main className="relative min-h-screen">
-      <div className="p-4 flex flex-col gap-4 pb-24">
+      <PageContainer className="flex flex-col gap-4 pb-24">
         {asanas.length === 0 ? (
           <p className="text-center text-muted-foreground">No asanas found.</p>
         ) : (
           asanas.map((asana) => (
             <Link key={asana.id} href={`/library/${asana.id}`}>
-              {/* Pass showPlusIcon = false explicitly */}
               <DocCard
                 title={asana.title}
                 preview={getPreview(asana.content)}
@@ -98,12 +98,11 @@ export default function LibraryPage() {
             </Link>
           ))
         )}
-      </div>
-
-      {/* Floating Action Button */}
-      <div className="absolute bottom-6 right-6">
-        <FAB variant="create" href="/library/create" />
-      </div>
+        {/* Floating Action Button */}
+        <div className="flex justify-end pt-4">
+          <FAB variant="create" href="/library/create" />
+        </div>
+      </PageContainer>
     </main>
   );
 }

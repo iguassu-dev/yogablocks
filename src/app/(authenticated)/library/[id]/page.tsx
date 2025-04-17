@@ -1,6 +1,4 @@
 // Document detail page
-// import { FAB } from "@/components/ui/FAB";
-// <FAB variant="edit" href={`/library/edit/${docId}`} />
 
 "use client";
 
@@ -9,10 +7,10 @@ import { useParams, useRouter } from "next/navigation";
 import supabase from "@/lib/supabaseClient";
 import { TypographyHeading1, TypographyBody } from "@/components/ui/typography";
 import { useHeader } from "@/hooks/useHeader";
-
+import { PageContainer } from "@/components/layouts/page-container";
+import { FAB } from "@/components/ui/FAB";
 export default function DocumentDetailPage() {
   const { id } = useParams();
-  const router = useRouter();
   const { setMode, setTitle } = useHeader();
   const [document, setDocument] = useState<Document | null>(null);
   const [loading, setLoading] = useState(true);
@@ -76,12 +74,15 @@ export default function DocumentDetailPage() {
   }
 
   return (
-    <main
-      className="p-4 flex flex-col gap-4"
-      key={`${document.id}-${timestamp}`}
-    >
-      <TypographyHeading1>{document.title}</TypographyHeading1>
-      <TypographyBody>{document.content}</TypographyBody>
+    <main className="relative min-h-screen">
+      <PageContainer className="flex flex-col gap-4 pb-24">
+        <TypographyHeading1>{document.title}</TypographyHeading1>
+        <TypographyBody>{document.content}</TypographyBody>
+        {/* Floating Action Button */}
+        <div className="flex justify-end pt-4">
+          <FAB variant="edit" href={`/library/edit/${document.id}`} />
+        </div>
+      </PageContainer>
     </main>
   );
 }

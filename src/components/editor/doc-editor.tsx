@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useRouter } from "next/navigation";
-// import { cn } from "@/lib/utils";
+import { PageContainer } from "@/components/layouts/page-container";
 
 // 🔧 Props shape for reusable Create/Edit experience
 type DocEditorProps = {
@@ -40,7 +39,9 @@ export function DocEditor({
   };
 
   return (
-    <div className="p-4 flex flex-col gap-4 max-w-screen-md mx-auto">
+    <PageContainer className="flex flex-col gap-4 pt-4 pb-24">
+      {" "}
+      {/* leave bottom space for FAB */}
       {/* ── Title Input ── */}
       <Input
         value={title}
@@ -49,7 +50,6 @@ export function DocEditor({
         className="text-2xl font-semibold text-primary outline-none border-b border-muted pb-2"
         disabled={saving}
       />
-
       {/* ── Placeholder for TipTap (for now use Textarea) ── */}
       <Textarea
         value={content}
@@ -58,7 +58,6 @@ export function DocEditor({
         className="min-h-[300px] w-full border border-muted rounded-lg p-3 text-base font-normal resize-none"
         disabled={saving}
       />
-
       {/* ── Save Button ── */}
       <div className="flex justify-end pt-2">
         <Button
@@ -68,6 +67,6 @@ export function DocEditor({
           {saving ? "Saving..." : mode === "edit" ? "Save Changes" : "Create"}
         </Button>
       </div>
-    </div>
+    </PageContainer>
   );
 }
