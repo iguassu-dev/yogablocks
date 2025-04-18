@@ -105,8 +105,7 @@ export default function EditAsanaPage() {
 
       toast.success("Changes saved successfully");
 
-      // Force a full page reload by using router.replace()
-      const viewUrl = `/library/${documentId}`;
+      const viewUrl = `/library/${documentId}?from=edit`;
       router.replace(viewUrl);
     } catch (err) {
       console.error("Unexpected error during update:", err);

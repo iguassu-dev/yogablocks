@@ -76,7 +76,15 @@ export default function Header() {
                 variant="ghost"
                 size="icon"
                 className="shrink-0 h-10 w-10"
-                onClick={() => router.back()}
+                onClick={() => {
+                  const backToLibrary =
+                    sessionStorage.getItem("backToLibrary") === "true";
+                  if (backToLibrary) {
+                    router.push("/library");
+                  } else {
+                    router.back();
+                  }
+                }}
               >
                 <ArrowLeft className="h-6 w-6" />
               </Button>

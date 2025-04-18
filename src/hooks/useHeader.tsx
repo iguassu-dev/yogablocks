@@ -19,6 +19,10 @@ type HeaderContextType = {
   setTitle: (title: string) => void;
   isLibraryDrawerOpen: boolean;
   setIsLibraryDrawerOpen: (isOpen: boolean) => void;
+
+  // ✅ NEW: track whether user landed on detail page from edit
+  backToLibrary: boolean;
+  setBackToLibrary: (val: boolean) => void;
 };
 
 // ─────────────────────────────────────────────
@@ -30,14 +34,15 @@ const HeaderContext = createContext<HeaderContextType | undefined>(undefined);
 // 3. Create the Provider component to wrap the app
 // ─────────────────────────────────────────────
 export function HeaderProvider({ children }: { children: React.ReactNode }) {
-  // Define all shared state
-  const [mode, setMode] = useState<
-    "library" | "docView" | "docEdit" | "docCreate"
-  >("library");
+  const [mode, setMode] = useState<HeaderContextType["mode"]>("library");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [title, setTitle] = useState("YogaBlocks");
   const [isLibraryDrawerOpen, setIsLibraryDrawerOpen] = useState(false);
+
+  // ✅ NEW state to track edit → view nav
+  const [backToLibrary, setBackToLibrary] = useState(false);
+
   const pathname = usePathname();
 
   // Set mode based on pathname
@@ -69,6 +74,8 @@ export function HeaderProvider({ children }: { children: React.ReactNode }) {
         setTitle,
         isLibraryDrawerOpen,
         setIsLibraryDrawerOpen,
+        backToLibrary,
+        setBackToLibrary, // ✅ expose setter
       }}
     >
       {children}

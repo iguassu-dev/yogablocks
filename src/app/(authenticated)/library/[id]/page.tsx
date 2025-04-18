@@ -5,17 +5,20 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import supabase from "@/lib/supabaseClient";
 import { TypographyHeading1, TypographyBody } from "@/components/ui/typography";
 import { useHeader } from "@/hooks/useHeader";
 import { PageContainer } from "@/components/layouts/page-container";
 import { FAB } from "@/components/ui/FAB";
+
 export default function DocumentDetailPage() {
   const { id } = useParams();
   const { setMode, setTitle } = useHeader();
   const [document, setDocument] = useState<Document | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
 
   type Document = {
     id: string;
@@ -42,16 +45,22 @@ export default function DocumentDetailPage() {
       }
       setLoading(false);
     }
-
+    const cameFromEdit = searchParams.get("from") === "edit";
     if (id) {
       fetchDocument();
       setMode("docView");
+
+      if (cameFromEdit) {
+        sessionStorage.setItem("backToLibrary", "true");
+      } else {
+        sessionStorage.removeItem("backToLibrary");
+      }
     }
 
     return () => {
       setTitle("YogaBlocks");
     };
-  }, [id, setMode, setTitle]);
+  }, [id, searchParams, setMode, setTitle]);
 
   if (loading) {
     return (
