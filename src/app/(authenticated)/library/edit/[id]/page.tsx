@@ -70,15 +70,21 @@ export default function EditAsanaPage() {
         return;
       }
 
-      // Proceed with update
-      const { error } = await supabase
+      // Proceed with update and log results
+      const { data, error } = await supabase
         .from("documents")
         .update({
           title,
           content,
           updated_at: new Date().toISOString(),
         })
-        .eq("id", documentId);
+        .eq("id", documentId)
+        .select();
+      console.log("Update result:", { data, error });
+
+      if (data?.length === 0) {
+        console.warn("Update failed — possibly blocked by RLS");
+      }
 
       if (error) {
         console.error("Supabase update error:", {
