@@ -1,9 +1,10 @@
 // Document detail page
+// src/app/(authenticated)/library/[id]/page.tsx
 
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import supabase from "@/lib/supabaseClient";
 import { TypographyHeading1, TypographyBody } from "@/components/ui/typography";
 import { useHeader } from "@/hooks/useHeader";
@@ -15,7 +16,6 @@ export default function DocumentDetailPage() {
   const [document, setDocument] = useState<Document | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [timestamp, setTimestamp] = useState(Date.now());
 
   type Document = {
     id: string;
@@ -39,8 +39,6 @@ export default function DocumentDetailPage() {
         console.log("Document fetched for viewing:", data);
         setDocument(data);
         setTitle(data.title);
-        // Update timestamp to force re-render
-        setTimestamp(Date.now());
       }
       setLoading(false);
     }

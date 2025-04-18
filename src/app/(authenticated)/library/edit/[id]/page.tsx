@@ -57,8 +57,7 @@ export default function EditAsanaPage() {
     setError(null);
 
     try {
-      // First check if the document exists
-      const { data: checkData, error: checkError } = await supabase
+      const { error: checkError } = await supabase
         .from("documents")
         .select("id")
         .eq("id", documentId)

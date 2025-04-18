@@ -7,11 +7,11 @@ import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabaseClient";
 import useUser from "@/hooks/useUser";
 import { useHeader } from "@/hooks/useHeader";
+import { PageContainer } from "@/components/layouts/page-container";
 import { useDebounce } from "use-debounce";
 import { DocCard } from "@/components/ui/doc-card";
-import { FAB } from "@/components/ui/FAB";
 import { getPreview } from "@/lib/utils";
-import { PageContainer } from "@/components/layouts/page-container";
+import { FAB } from "@/components/ui/FAB";
 
 export default function LibraryPage() {
   const { user, loading: userLoading } = useUser();

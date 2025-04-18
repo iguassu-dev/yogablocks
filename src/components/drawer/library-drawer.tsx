@@ -37,7 +37,7 @@ export function LibraryDrawer() {
     if (isLibraryDrawerOpen) {
       fetchDocuments();
     }
-  }, [isLibraryDrawerOpen, supabase]);
+  }, [isLibraryDrawerOpen]);
 
   const filteredDocuments = documents.filter((doc) =>
     doc.title.toLowerCase().includes(searchQuery.toLowerCase())

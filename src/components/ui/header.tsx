@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { TypographyBody, TypographyHeading3 } from "@/components/ui/typography";
 import { useHeader } from "@/hooks/useHeader";
 import { SearchInput } from "@/components/ui/search-input";
-import { LibraryDrawer } from "@/components/drawer/LibraryDrawer";
+import { LibraryDrawer } from "@/components/drawer/library-drawer";
 import { PageContainer } from "@/components/layouts/page-container";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
