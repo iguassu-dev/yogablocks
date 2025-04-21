@@ -22,7 +22,7 @@ export function AsanaReadView({ title, content }: AsanaReadViewProps) {
     return (
       <ul className="list-disc pl-5 space-y-1 text-sm">
         {items.map((item, i) => (
-          <li key={i} className="text-muted-foreground">
+          <li key={i} className="text-primary">
             {item}
           </li>
         ))}
@@ -81,7 +81,7 @@ export function AsanaReadView({ title, content }: AsanaReadViewProps) {
       {/* ─────────── Modifications ─────────── */}
       {parsed.modifications && (
         <div>
-          <TypographyHeading3>Modifications</TypographyHeading3>
+          <TypographyHeading4>Modifications</TypographyHeading4>
           {renderList(parsed.modifications)}
         </div>
       )}
