@@ -140,7 +140,7 @@ export default function EditAsanaPage() {
 
   return (
     <DocEditor
-      mode="edit"
+      mode="docEdit"
       initialTitle={initialTitle}
       initialContent={initialContent}
       onSave={handleUpdate}

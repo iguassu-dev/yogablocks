@@ -2,15 +2,11 @@
 
 // When in library mode and isSearchOpen = false, Show brand title + search icon
 // When in library mode and isSearchOpen = true, Show full search input
-// When in docView mode, Show brand title
-// When in docEdit mode, Show "Editing..." title
-
-// src/components/ui/header.tsx
 
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import {
@@ -20,6 +16,7 @@ import {
   MoreVertical,
   Trash2,
   Copy,
+  Check,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -27,17 +24,14 @@ import { TypographyBody, TypographyHeading3 } from "@/components/ui/typography";
 import { SearchInput } from "@/components/ui/search-input";
 import { PageContainer } from "@/components/layouts/page-container";
 import { LibraryDrawer } from "@/components/drawer/library-drawer";
-
 import { useHeader } from "@/hooks/useHeader";
-import { useParams } from "next/navigation";
-
+import { deleteDocById } from "@/lib/deleteDoc";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-
 import {
   Dialog,
   DialogContent,
@@ -46,12 +40,6 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-
-import { deleteDocById } from "@/lib/deleteDoc";
-
-// ─────────────────────────────────────────────
-// Component
-// ─────────────────────────────────────────────
 
 export default function Header() {
   const {
@@ -62,24 +50,25 @@ export default function Header() {
     setSearchValue,
     title,
     setIsLibraryDrawerOpen,
+    backToLibrary,
+    onSave,
   } = useHeader();
+
   const router = useRouter();
   const { id } = useParams();
   const documentId = id as string;
 
-  // 🔴 Local state for modal
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // 🔴 Handler for deletion
   const handleDelete = async () => {
     try {
       await deleteDocById(documentId);
       router.push("/library");
     } catch (err) {
       console.error(err);
-      // optionally show toast here later
     }
   };
+
   return (
     <>
       <header className="sticky top-0 z-50 bg-background supports-[backdrop-filter]:bg-background border-b pt-safe-top">
@@ -126,8 +115,6 @@ export default function Header() {
                 size="icon"
                 className="shrink-0 h-10 w-10"
                 onClick={() => {
-                  const backToLibrary =
-                    sessionStorage.getItem("backToLibrary") === "true";
                   if (backToLibrary) {
                     router.push("/library");
                   } else {
@@ -137,6 +124,7 @@ export default function Header() {
               >
                 <ArrowLeft className="h-6 w-6" />
               </Button>
+
               <div className="flex-1 truncate text-left">
                 <motion.div
                   key={title}
@@ -150,7 +138,20 @@ export default function Header() {
                 </motion.div>
               </div>
 
-              {/* Dropdown menu with Delete option */}
+              {/* Save icon in Edit mode */}
+              {mode === "docEdit" && onSave && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="shrink-0 h-10 w-10"
+                  onClick={onSave}
+                  aria-label="Save changes"
+                >
+                  <Check className="h-6 w-6" />
+                </Button>
+              )}
+
+              {/* Dropdown: Duplicate + Delete */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -176,7 +177,7 @@ export default function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Delete Confirmation Modal */}
+              {/* Delete Confirmation */}
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent>
                   <DialogHeader>
@@ -218,6 +219,7 @@ export default function Header() {
               >
                 <ArrowLeft className="h-6 w-6" />
               </Button>
+
               <div className="flex-1 truncate text-left">
                 <motion.div
                   key="new-document"
@@ -230,6 +232,21 @@ export default function Header() {
                   <TypographyBody>New Document</TypographyBody>
                 </motion.div>
               </div>
+
+              {/* ✅ Save icon for Create mode */}
+              {onSave && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="shrink-0 h-10 w-10"
+                  onClick={onSave}
+                  aria-label="Save document"
+                >
+                  <Check className="h-6 w-6" />
+                </Button>
+              )}
+
+              {/* 📚 Library Drawer toggle */}
               <Button
                 variant="ghost"
                 size="icon"

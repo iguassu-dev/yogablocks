@@ -2,7 +2,6 @@
 
 import { parseAsanaContent } from "@/lib/parseAsanaContent";
 import {
-  TypographyHeading3,
   TypographyBody,
   TypographyHeading1,
   TypographyHeading4,

@@ -1,67 +1,53 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { useCallback, useEffect, useState } from "react";
 import { PageContainer } from "@/components/layouts/page-container";
-import { Button } from "../ui/button";
+import { RichTextEditor } from "./rich-text-editor";
+import { useHeader } from "@/hooks/useHeader";
 
 type DocEditorProps = {
   initialTitle?: string;
   initialContent?: string;
   onSave: (title: string, content: string) => Promise<void>;
   saving?: boolean;
-  mode?: "create" | "edit";
+  mode?: "docCreate" | "docEdit";
 };
 
 export function DocEditor({
-  initialTitle = "",
+  initialTitle = "Untitled Asana",
   initialContent = "",
   onSave,
-  saving = false,
-  mode = "create",
 }: DocEditorProps) {
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
+  const { setTitle: setHeaderTitle, setOnSave } = useHeader();
 
+  // ✅ useCallback stays
+  const handleSubmit = useCallback(async () => {
+    const cleanedTitle = title.trim() || "Untitled Asana";
+    const cleanedContent = content.trim();
+    if (!cleanedContent) return;
+    await onSave(cleanedTitle, cleanedContent);
+  }, [title, content, onSave]);
+  // 1️⃣ Set title in header when it changes
   useEffect(() => {
-    setTitle(initialTitle);
-    setContent(initialContent);
-  }, [initialTitle, initialContent]);
+    setHeaderTitle(title);
+  }, [title, setHeaderTitle]);
 
-  const handleSubmit = async () => {
-    if (!title.trim() || !content.trim()) return;
-    await onSave(title.trim(), content.trim());
-  };
+  // 2️⃣ Set save handler in header only once per stabilized handleSubmit
+  useEffect(() => {
+    setOnSave(handleSubmit);
+  }, [handleSubmit, setOnSave]);
 
   return (
     <PageContainer className="flex flex-col gap-4 pt-4 pb-24">
-      {/* ── Title Input ── */}
-      <Input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Enter document title..."
-        className="text-2xl font-semibold text-primary outline-none border-b border-muted pb-2"
-        disabled={saving}
+      <RichTextEditor
+        initialContent={content}
+        onChange={(updatedContent, parsedTitle) => {
+          setContent(updatedContent);
+          if (parsedTitle) setTitle(parsedTitle);
+        }}
       />
-
-      {/* ── TipTap placeholder (Textarea) ── */}
-      <Textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Start typing your content here..."
-        className="min-h-[300px] w-full border border-muted rounded-lg p-3 text-base font-normal resize-none"
-        disabled={saving}
-      />
-      {/* ── Save Button ── */}
-      <div className="flex justify-end pt-2">
-        <Button
-          onClick={handleSubmit}
-          disabled={saving || !title.trim() || !content.trim()}
-        >
-          {saving ? "Saving..." : mode === "edit" ? "Save Changes" : "Create"}
-        </Button>
-      </div>
     </PageContainer>
   );
 }

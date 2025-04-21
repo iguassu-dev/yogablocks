@@ -19,10 +19,10 @@ type HeaderContextType = {
   setTitle: (title: string) => void;
   isLibraryDrawerOpen: boolean;
   setIsLibraryDrawerOpen: (isOpen: boolean) => void;
-
-  // ✅ NEW: track whether user landed on detail page from edit
   backToLibrary: boolean;
   setBackToLibrary: (val: boolean) => void;
+  onSave?: () => void;
+  setOnSave: (fn: () => void) => void;
 };
 
 // ─────────────────────────────────────────────
@@ -39,9 +39,8 @@ export function HeaderProvider({ children }: { children: React.ReactNode }) {
   const [searchValue, setSearchValue] = useState("");
   const [title, setTitle] = useState("YogaBlocks");
   const [isLibraryDrawerOpen, setIsLibraryDrawerOpen] = useState(false);
-
-  // ✅ NEW state to track edit → view nav
   const [backToLibrary, setBackToLibrary] = useState(false);
+  const [onSave, setOnSave] = useState<() => void>(() => () => {});
 
   const pathname = usePathname();
 
@@ -75,7 +74,9 @@ export function HeaderProvider({ children }: { children: React.ReactNode }) {
         isLibraryDrawerOpen,
         setIsLibraryDrawerOpen,
         backToLibrary,
-        setBackToLibrary, // ✅ expose setter
+        setBackToLibrary,
+        onSave,
+        setOnSave: (fn) => setOnSave(() => fn),
       }}
     >
       {children}
