@@ -4,21 +4,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import supabase from "@/lib/supabaseClient";
-import { TypographyHeading1, TypographyBody } from "@/components/ui/typography";
 import { useHeader } from "@/hooks/useHeader";
 import { PageContainer } from "@/components/layouts/page-container";
 import { FAB } from "@/components/ui/FAB";
+import { AsanaReadView } from "@/components/ui/asana-read-view";
 
 export default function DocumentDetailPage() {
   const { id } = useParams();
+  const searchParams = useSearchParams();
   const { setMode, setTitle } = useHeader();
+
   const [document, setDocument] = useState<Document | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const searchParams = useSearchParams();
 
   type Document = {
     id: string;
@@ -45,6 +45,7 @@ export default function DocumentDetailPage() {
       }
       setLoading(false);
     }
+
     const cameFromEdit = searchParams.get("from") === "edit";
     if (id) {
       fetchDocument();
@@ -82,10 +83,11 @@ export default function DocumentDetailPage() {
 
   return (
     <main className="relative min-h-screen">
-      <PageContainer className="flex flex-col gap-4 pb-24">
-        <TypographyHeading1>{document.title}</TypographyHeading1>
-        <TypographyBody>{document.content}</TypographyBody>
-        {/* Floating Action Button */}
+      <PageContainer className="flex flex-col gap-6 pb-24">
+        {/* 🧠 Structured Read View replaces raw markdown */}
+        <AsanaReadView title={document.title} content={document.content} />
+
+        {/* ✏️ Edit Floating Action Button */}
         <div className="flex justify-end pt-4">
           <FAB variant="edit" href={`/library/edit/${document.id}`} />
         </div>

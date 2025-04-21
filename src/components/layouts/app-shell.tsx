@@ -2,7 +2,7 @@
 // It should be used inside authenticated layouts, NOT directly under /app/layout.tsx, because /login and /signup pages don’t need the sticky header.
 
 import { HeaderProvider } from "@/hooks/useHeader";
-import Header from "@/components/ui/header";
+import Header from "@/components/layouts/header";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
