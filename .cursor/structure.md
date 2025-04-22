@@ -14,34 +14,6 @@ Outlines the current project file structure so Cursor can locate relevant files 
 - `src/components/editor/doc-editor.tsx` → Entry point for editor
 - `src/components/editor/rich-text-editor.tsx` → TipTap implementation
 
-## Component Hierarchy
-
-AppShell
-├── HeaderProvider
-│ └── Header
-│ ├── Library Mode → Shows brand title + search icon
-│ ├── Doc View Mode → Shows document title
-│ ├── Doc Edit Mode → Shows "Editing..." title
-│ └── Doc Create Mode → Shows "New Document" title
-└── Main Content
-│
-├── Library Page
-│ ├── PageContainer → Provides consistent layout and spacing
-│ ├── DocCard (for each document) → Displays document preview
-│ └── FAB (Create) → Floating action button to create new docs
-│
-├── Document detail view
-│ ├── PageContainer → Provides consistent layout and spacing
-│ ├── TypographyHeading1 → Displays document title
-│ ├── TypographyBody → Displays document content
-│ └── FAB (Edit) → Floating action button to edit doc
-│
-├── Create doc
-│ └── DocEditor → Empty editor
-│
-└── Edit doc
-└── DocEditor → Editor populated with existing content
-
 ## Logic Layer
 
 - `src/hooks/useUser.ts` → Auth logic
