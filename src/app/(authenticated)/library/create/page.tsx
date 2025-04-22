@@ -31,5 +31,5 @@ export default function CreateAsanaPage() {
     }
   };
 
-  return <DocEditor mode="docCreate" onSave={handleCreate} saving={saving} />;
+  return <DocEditor onSave={handleCreate} saving={saving} />;
 }

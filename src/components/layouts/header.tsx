@@ -1,7 +1,9 @@
 // src/components/ui/header.tsx
 
-// When in library mode and isSearchOpen = false, Show brand title + search icon
-// When in library mode and isSearchOpen = true, Show full search input
+// mode = library:   [← Back]     [Doc Title]            [ ... ]
+// mode = docView:   [← Back]     [Doc Title]            [ ... ]
+// mode = docEdit:   [✔ Save]     [Doc Title]          [📚  ...]
+// mode = docCreate: [✔ Save]     ["Untitled Asana"]   [📚  ...]
 
 "use client";
 
@@ -50,7 +52,6 @@ export default function Header() {
     setSearchValue,
     title,
     setIsLibraryDrawerOpen,
-    backToLibrary,
     onSave,
   } = useHeader();
 
@@ -107,24 +108,23 @@ export default function Header() {
             </>
           )}
 
-          {/* ───── Doc View / Edit Mode ───── */}
-          {(mode === "docView" || mode === "docEdit") && (
+          {/* ───── Doc View Mode ───── */}
+          {mode === "docView" && (
             <>
+              {/* Back button */}
               <Button
                 variant="ghost"
                 size="icon"
                 className="shrink-0 h-10 w-10"
                 onClick={() => {
-                  if (backToLibrary) {
-                    router.push("/library");
-                  } else {
-                    router.back();
-                  }
+                  router.push("/library");
                 }}
+                aria-label="Go back"
               >
                 <ArrowLeft className="h-6 w-6" />
               </Button>
 
+              {/* Title */}
               <div className="flex-1 truncate text-left">
                 <motion.div
                   key={title}
@@ -132,108 +132,21 @@ export default function Header() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.25 }}
-                  className="truncate text-left"
+                  className="truncate"
                 >
                   <TypographyBody>{title}</TypographyBody>
                 </motion.div>
               </div>
 
-              {/* Save icon in Edit mode */}
-              {mode === "docEdit" && onSave && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="shrink-0 h-10 w-10"
-                  onClick={onSave}
-                  aria-label="Save changes"
-                >
-                  <Check className="h-6 w-6" />
-                </Button>
-              )}
-
-              {/* Dropdown: Duplicate + Delete */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="shrink-0 h-10 w-10"
-                  >
-                    <MoreVertical className="h-6 w-6" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent side="bottom" align="end">
-                  <DropdownMenuItem onClick={() => console.log("Duplicate")}>
-                    <Copy className="mr-2 h-4 w-4" />
-                    Duplicate
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="text-destructive focus:text-destructive"
-                    onClick={() => setIsDialogOpen(true)}
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Delete Confirmation */}
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Delete Document?</DialogTitle>
-                    <DialogDescription>
-                      This action cannot be undone.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <DialogFooter className="flex justify-end gap-2">
-                    <Button
-                      variant="ghost"
-                      onClick={() => setIsDialogOpen(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      onClick={async () => {
-                        await handleDelete();
-                        setIsDialogOpen(false);
-                      }}
-                    >
-                      Delete
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+              {/* More options */}
+              <MoreOptionsMenu onDelete={() => setIsDialogOpen(true)} />
             </>
           )}
 
-          {/* ───── Doc Create Mode ───── */}
-          {mode === "docCreate" && (
+          {/* ───── Doc Edit/Create Modes ───── */}
+          {(mode === "docEdit" || mode === "docCreate") && (
             <>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="shrink-0 h-10 w-10"
-                onClick={() => router.back()}
-              >
-                <ArrowLeft className="h-6 w-6" />
-              </Button>
-
-              <div className="flex-1 truncate text-left">
-                <motion.div
-                  key="new-document"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.25 }}
-                  className="truncate text-left"
-                >
-                  <TypographyBody>New Document</TypographyBody>
-                </motion.div>
-              </div>
-
-              {/* ✅ Save icon for Create mode */}
+              {/* Save button on the left */}
               {onSave && (
                 <Button
                   variant="ghost"
@@ -246,21 +159,88 @@ export default function Header() {
                 </Button>
               )}
 
-              {/* 📚 Library Drawer toggle */}
+              {/* Title (dynamic) */}
+              <div className="flex-1 truncate text-left">
+                <motion.div
+                  key={mode === "docCreate" ? "new-document" : title}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="truncate"
+                >
+                  <TypographyBody>
+                    {mode === "docCreate" ? "Untitled Asana" : title}
+                  </TypographyBody>
+                </motion.div>
+              </div>
+
+              {/* Library Drawer toggle */}
               <Button
                 variant="ghost"
                 size="icon"
                 className="shrink-0 h-10 w-10"
                 onClick={() => setIsLibraryDrawerOpen(true)}
+                aria-label="Open library"
               >
                 <Library className="h-6 w-6" />
               </Button>
+
+              {/* More options */}
+              <MoreOptionsMenu onDelete={() => setIsDialogOpen(true)} />
             </>
           )}
         </PageContainer>
       </header>
 
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Document?</DialogTitle>
+            <DialogDescription>This action cannot be undone.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex justify-end gap-2">
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={async () => {
+                await handleDelete();
+                setIsDialogOpen(false);
+              }}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <LibraryDrawer />
     </>
+  );
+}
+// More options menu
+function MoreOptionsMenu({ onDelete }: { onDelete: () => void }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className="shrink-0 h-10 w-10">
+          <MoreVertical className="h-6 w-6" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent side="bottom" align="end">
+        <DropdownMenuItem onClick={() => console.log("Duplicate")}>
+          <Copy className="mr-2 h-4 w-4" /> Duplicate
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="text-destructive focus:text-destructive"
+          onClick={onDelete}
+        >
+          <Trash2 className="mr-2 h-4 w-4" /> Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

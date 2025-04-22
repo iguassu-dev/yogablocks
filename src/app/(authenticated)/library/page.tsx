@@ -1,4 +1,5 @@
 // library home page
+// src/app/(authenticated)/library/page.tsx
 "use client";
 
 import Link from "next/link";
@@ -16,7 +17,7 @@ import { FAB } from "@/components/ui/FAB";
 export default function LibraryPage() {
   const { user, loading: userLoading } = useUser();
   const router = useRouter();
-  const { setMode, setIsSearchOpen, searchValue } = useHeader();
+  const { searchValue } = useHeader();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,11 +29,6 @@ export default function LibraryPage() {
     title: string;
     content: string;
   };
-
-  useEffect(() => {
-    setMode("library");
-    setIsSearchOpen(false);
-  }, [setMode, setIsSearchOpen]);
 
   useEffect(() => {
     if (!userLoading && !user) {

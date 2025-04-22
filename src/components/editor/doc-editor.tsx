@@ -10,7 +10,6 @@ type DocEditorProps = {
   initialContent?: string;
   onSave: (title: string, content: string) => Promise<void>;
   saving?: boolean;
-  mode?: "docCreate" | "docEdit";
 };
 
 export function DocEditor({

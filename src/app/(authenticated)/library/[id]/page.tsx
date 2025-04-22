@@ -14,7 +14,7 @@ import { AsanaReadView } from "@/components/ui/asana-read-view";
 export default function DocumentDetailPage() {
   const { id } = useParams();
   const searchParams = useSearchParams();
-  const { setMode, setTitle } = useHeader();
+  const { setTitle } = useHeader();
 
   const [document, setDocument] = useState<Document | null>(null);
   const [loading, setLoading] = useState(true);
@@ -49,7 +49,6 @@ export default function DocumentDetailPage() {
     const cameFromEdit = searchParams.get("from") === "edit";
     if (id) {
       fetchDocument();
-      setMode("docView");
 
       if (cameFromEdit) {
         sessionStorage.setItem("backToLibrary", "true");
@@ -61,7 +60,7 @@ export default function DocumentDetailPage() {
     return () => {
       setTitle("YogaBlocks");
     };
-  }, [id, searchParams, setMode, setTitle]);
+  }, [id, searchParams, setTitle]);
 
   if (loading) {
     return (
