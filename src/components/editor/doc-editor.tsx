@@ -17,21 +17,38 @@ export function DocEditor({
   initialContent = "",
   onSave,
 }: DocEditorProps) {
-  const [title, setTitle] = useState(initialTitle);
-  const [content, setContent] = useState(initialContent);
+  const initialHTML = `
+  <h1>${initialTitle.trim() || "Untitled Asana"}</h1>
+  ${initialContent
+    .split("\n\n")
+    .map((p) => `<p>${p}</p>`)
+    .join("")}
+`;
+
+  const [documentContent, setDocumentContent] = useState(initialHTML);
+
   const { setTitle: setHeaderTitle, setOnSave } = useHeader();
+
+  // Helper to pull title/body out of our HTML
+  function extractTitleAndBody(html: string) {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    const h1 = doc.querySelector("h1");
+    const title = (h1?.textContent || "").trim() || "Untitled Asana";
+    if (h1) h1.remove();
+    return { title, body: doc.body.innerHTML.trim() };
+  }
 
   // ✅ useCallback stays
   const handleSubmit = useCallback(async () => {
-    const cleanedTitle = title.trim() || "Untitled Asana";
-    const cleanedContent = content.trim();
-    if (!cleanedContent) return;
-    await onSave(cleanedTitle, cleanedContent);
-  }, [title, content, onSave]);
-  // 1️⃣ Set title in header when it changes
+    const { title, body } = extractTitleAndBody(documentContent);
+    await onSave(title, body);
+  }, [documentContent, onSave]);
+
+  // 1️⃣ Sync the running title into our global Header
   useEffect(() => {
+    const { title } = extractTitleAndBody(documentContent);
     setHeaderTitle(title);
-  }, [title, setHeaderTitle]);
+  }, [documentContent, setHeaderTitle]);
 
   // 2️⃣ Set save handler in header only once per stabilized handleSubmit
   useEffect(() => {
@@ -41,10 +58,9 @@ export function DocEditor({
   return (
     <PageContainer className="flex flex-col gap-4 pt-4 pb-24">
       <RichTextEditor
-        initialContent={content}
-        onChange={(updatedContent, parsedTitle) => {
-          setContent(updatedContent);
-          if (parsedTitle) setTitle(parsedTitle);
+        initialContent={documentContent}
+        onChange={(updatedContent /*, parsedTitle*/) => {
+          setDocumentContent(updatedContent);
         }}
       />
     </PageContainer>

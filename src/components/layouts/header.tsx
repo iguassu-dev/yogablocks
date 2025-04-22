@@ -155,7 +155,7 @@ export default function Header() {
                   onClick={onSave}
                   aria-label="Save document"
                 >
-                  <Check className="h-6 w-6" />
+                  <Check className="h-6 w-6 text-purple-700" />
                 </Button>
               )}
 

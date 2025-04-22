@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import "tailwindcss/preflight.css";
+@import "tailwindcss/utilities.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -131,4 +131,8 @@
 /* make hash links land below sticky header */
 html {
   scroll-padding-top: theme(spacing[16]); /* 4rem = 56px header + wiggle */
+}
+
+.editor-content h1 {
+  @apply text-3xl font-semibold text-primary;
 }

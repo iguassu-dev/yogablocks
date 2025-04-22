@@ -29,12 +29,19 @@ export function AsanaReadView({ title, content }: AsanaReadViewProps) {
     );
   };
 
-  // 🪛 Fallback: render raw markdown if structure missing
+  // 🪛 Fallback: render HTML content if we couldn’t parse structure
   if (parsed.remainingText) {
     return (
-      <TypographyBody className="whitespace-pre-wrap text-sm px-4 py-6">
-        {parsed.remainingText}
-      </TypographyBody>
+      <div className="px-4 py-6 space-y-4 text-sm text-primary">
+        {/* Always show the title */}
+        <TypographyHeading1>{title}</TypographyHeading1>
+
+        {/* Render the HTML string saved by the editor */}
+        <div
+          className="prose text-primary"
+          dangerouslySetInnerHTML={{ __html: parsed.remainingText }}
+        />
+      </div>
     );
   }
 

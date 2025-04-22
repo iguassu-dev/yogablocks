@@ -40,6 +40,7 @@ export default function DocumentDetailPage() {
         setError(error.message);
       } else {
         console.log("Document fetched for viewing:", data);
+        console.log("🔍 Loaded content:", JSON.stringify(data.content));
         setDocument(data);
         setTitle(data.title);
       }

@@ -76,7 +76,10 @@ export function RichTextEditor({
   // ─────────────────────────────────────────────
   return (
     <div className="w-full">
-      <EditorContent editor={editor} />
+      <EditorContent
+        editor={editor}
+        className="editor-content min-h-[200px] p-4 bg-background"
+      />
     </div>
   );
 }
