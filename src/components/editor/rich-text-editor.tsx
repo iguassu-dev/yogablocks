@@ -75,7 +75,7 @@ export function RichTextEditor({
   // 4. Render the Editor
   // ─────────────────────────────────────────────
   return (
-    <div className="w-full border rounded-md shadow-sm">
+    <div className="w-full">
       <EditorContent editor={editor} />
     </div>
   );
