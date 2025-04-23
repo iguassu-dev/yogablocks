@@ -1,9 +1,5 @@
 "use client";
 
-import {
-  TypographyHeading4,
-  TypographyCaption,
-} from "@/components/ui/typography";
 import { Triangle, CirclePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -19,18 +15,19 @@ export function DocCard({
   showPlusIcon = false,
 }: DocCardProps) {
   return (
-    <div className="w-full py-3 flex items-start gap-4">
+    <div className="w-full bg-card text-card-foreground p-4 flex items-start gap-4">
       {/* Left Icon */}
-      <div className="w-10 h-10 flex items-center justify-center">
+      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-muted">
         <Triangle className="w-5 h-5 text-foreground" />
       </div>
 
       {/* Title, Preview, and optional Plus Button */}
-      <div className="flex-1 flex flex-col items-start gap-0.5">
-        <TypographyHeading4 className="w-full">{title}</TypographyHeading4>
-        <TypographyCaption className="w-full line-clamp-2 text-muted-foreground">
-          {preview}
-        </TypographyCaption>
+      <div className="flex-1 prose prose-sm prose-primary">
+        {/* Title as H4 in the same typographic scale */}
+        <h4 className="m-0">{title}</h4>
+
+        {/* Preview reuses prose paragraph styles */}
+        <p className="mt-1 line-clamp-2">{preview}</p>
       </div>
 
       {/* Right Plus Icon (visible only if showPlusIcon = true) */}
