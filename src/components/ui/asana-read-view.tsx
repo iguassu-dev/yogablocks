@@ -1,12 +1,7 @@
 "use client";
 
+import * as React from "react";
 import { parseAsanaContent } from "@/lib/parseAsanaContent";
-import {
-  TypographyBody,
-  TypographyBulletList,
-  TypographyHeading1,
-  TypographyHeading4,
-} from "@/components/ui/typography";
 
 type AsanaReadViewProps = {
   title: string;
@@ -16,90 +11,51 @@ type AsanaReadViewProps = {
 export function AsanaReadView({ title, content }: AsanaReadViewProps) {
   const parsed = parseAsanaContent(content);
 
-  // 🧾 Optional rendering helper
-  const renderList = (items?: string[]) => {
-    if (!items || items.length === 0) return null;
-    return (
-      <TypographyBulletList>
-        {items.map((item, i) => (
-          <li key={i} className="text-primary">
-            {item}
-          </li>
-        ))}
-      </TypographyBulletList>
-    );
-  };
+  // Render a heading + either a single string or bullet list
+  function renderField(
+    label: string,
+    value?: string | string[]
+  ): React.ReactNode {
+    if (!value || (Array.isArray(value) && value.length === 0)) {
+      return null;
+    }
 
-  // 🪛 Fallback: render HTML content if we couldn’t parse structure
-  if (parsed.remainingText) {
     return (
-      <div className="px-4 py-6 space-y-4 text-sm text-primary">
-        {/* Always show the title */}
-        <TypographyHeading1>{title}</TypographyHeading1>
-
-        {/* Render the HTML string saved by the editor */}
-        <div
-          className="prose text-primary"
-          dangerouslySetInnerHTML={{ __html: parsed.remainingText }}
-        />
-      </div>
+      <>
+        <h2>{label}</h2>
+        {typeof value === "string" ? (
+          <p>{value}</p>
+        ) : (
+          <ul>
+            {value.map((item, i) => (
+              <li key={i}>{item}</li>
+            ))}
+          </ul>
+        )}
+      </>
     );
   }
 
   return (
-    <div className="px-4 py-6 space-y-6 text-sm text-primary">
-      {/* ─────────── Title ─────────── */}
-      <div>
-        <TypographyHeading1>{title}</TypographyHeading1>
-      </div>
+    <article className="prose prose-sm prose-primary max-w-none">
+      {/* Title */}
+      <h1>{title}</h1>
 
-      {/* ─────────── Sanskrit ─────────── */}
-      {parsed.sanskrit && (
-        <div>
-          <TypographyHeading4>Sanskrit</TypographyHeading4>
-          <TypographyBody>{parsed.sanskrit}</TypographyBody>
-        </div>
-      )}
+      {/* Structured fields */}
+      {renderField("Sanskrit", parsed.sanskrit)}
+      {renderField("Category", parsed.category)}
+      {renderField("Benefits", parsed.benefits)}
+      {renderField("Contraindications", parsed.contraindications)}
+      {renderField("Modifications", parsed.modifications)}
+      {renderField("Preparatory Poses", parsed.preparatory_poses)}
 
-      {/* ─────────── Category ─────────── */}
-      {parsed.category && (
-        <div>
-          <TypographyHeading4>Category</TypographyHeading4>
-          <TypographyBody>{parsed.category}</TypographyBody>
-        </div>
+      {/* Fallback */}
+      {parsed.remainingText && (
+        <div
+          className="prose prose-sm prose-primary"
+          dangerouslySetInnerHTML={{ __html: parsed.remainingText }}
+        />
       )}
-
-      {/* ─────────── Benefits ─────────── */}
-      {parsed.benefits && (
-        <div>
-          <TypographyHeading4>Benefits</TypographyHeading4>
-          {renderList(parsed.benefits)}
-        </div>
-      )}
-
-      {/* ─────────── Contraindications ─────────── */}
-      {parsed.contraindications && (
-        <div>
-          <TypographyHeading4>Contraindications</TypographyHeading4>
-          {renderList(parsed.contraindications)}
-        </div>
-      )}
-
-      {/* ─────────── Modifications ─────────── */}
-      {parsed.modifications && (
-        <div>
-          <TypographyHeading4>Modifications</TypographyHeading4>
-          {renderList(parsed.modifications)}
-        </div>
-      )}
-
-      {/* ─────────── Preparatory Poses ─────────── */}
-      {parsed.preparatory_poses && (
-        <div>
-          <TypographyHeading4>Preparatory Poses</TypographyHeading4>
-          {renderList(parsed.preparatory_poses)}
-        </div>
-      )}
-    </div>
+    </article>
   );
 }

@@ -3,6 +3,7 @@
 /* 1. Import Tailwind v4 as a PostCSS plugin */
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "@tailwindcss/typography";
 
 /* 2. Keep your custom dark-variant if you need it */
 @custom-variant dark (&:is(.dark *));
