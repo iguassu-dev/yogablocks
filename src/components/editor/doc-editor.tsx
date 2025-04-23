@@ -1,13 +1,19 @@
+// src/components/editor/doc-editor.tsx
+
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
 import { PageContainer } from "@/components/layouts/page-container";
 import { RichTextEditor } from "./rich-text-editor";
 import { useHeader } from "@/hooks/useHeader";
+import { markdownToHtml } from "@/lib/utils"; // Markdown → HTML
 
+// ─────────────────────────────────────────────
+// Component props
+// ─────────────────────────────────────────────
 type DocEditorProps = {
   initialTitle?: string;
-  initialContent?: string;
+  initialContent?: string; // stored as Markdown
   onSave: (title: string, content: string) => Promise<void>;
   saving?: boolean;
 };
@@ -17,19 +23,28 @@ export function DocEditor({
   initialContent = "",
   onSave,
 }: DocEditorProps) {
-  const initialHTML = `
-  <h1>${initialTitle.trim() || "Untitled Asana"}</h1>
-  ${initialContent
-    .split("\n\n")
-    .map((p) => `<p>${p}</p>`)
-    .join("")}
-`;
+  // — State: HTML content for TipTap
+  const [documentContent, setDocumentContent] = useState<string>("");
 
-  const [documentContent, setDocumentContent] = useState(initialHTML);
-
+  // — Header context
   const { setTitle: setHeaderTitle, setOnSave } = useHeader();
 
-  // Helper to pull title/body out of our HTML
+  // ─────────────────────────────────────────────
+  // Load Markdown → HTML for the editor on mount
+  // ─────────────────────────────────────────────
+  useEffect(() => {
+    async function initContent() {
+      const bodyHtml = await markdownToHtml(initialContent);
+      const fullHtml = `<h1>${initialTitle}</h1>${bodyHtml}`;
+      setDocumentContent(fullHtml);
+      setHeaderTitle(initialTitle);
+    }
+    initContent();
+  }, [initialContent, initialTitle, setHeaderTitle]);
+
+  // ─────────────────────────────────────────────
+  // Extract <h1> title and body HTML
+  // ─────────────────────────────────────────────
   function extractTitleAndBody(html: string) {
     const doc = new DOMParser().parseFromString(html, "text/html");
     const h1 = doc.querySelector("h1");
@@ -38,27 +53,43 @@ export function DocEditor({
     return { title, body: doc.body.innerHTML.trim() };
   }
 
-  // ✅ useCallback stays
+  // ─────────────────────────────────────────────
+  // Save handler: convert HTML → Markdown, then onSave
+  // ─────────────────────────────────────────────
   const handleSubmit = useCallback(async () => {
-    const { title, body } = extractTitleAndBody(documentContent);
-    await onSave(title, body);
+    // 1) Pull title & raw HTML body out of the editor content
+    const { title, body: htmlBody } = extractTitleAndBody(documentContent);
+
+    // 2) Instantiate TurndownService here (moved inside callback)
+    //    — ensures dependencies won't change every render
+    const TurndownService = (await import("turndown")).default;
+    const turndownService = new TurndownService();
+
+    // 3) Convert the HTML body back into Markdown
+    const markdown = turndownService.turndown(htmlBody);
+
+    // 4) Pass Markdown (not HTML) to onSave
+    await onSave(title, markdown);
+
+    // Dependencies: documentContent & onSave only
   }, [documentContent, onSave]);
 
-  // [Removed] redundant effect—header now updates from RichTextEditor’s parsed title
-
-  // 2️⃣ Set save handler in header only once per stabilized handleSubmit
+  // ─────────────────────────────────────────────
+  // Register save handler once
+  // ─────────────────────────────────────────────
   useEffect(() => {
     setOnSave(handleSubmit);
   }, [handleSubmit, setOnSave]);
 
+  // ─────────────────────────────────────────────
+  // Render the editor
+  // ─────────────────────────────────────────────
   return (
     <PageContainer className="py-6 px-4">
       <RichTextEditor
         initialContent={documentContent}
-        onChange={(
-          updatedContent,
-          extractedTitle /* Tiptap gives us the H1 text */
-        ) => {
+        editable
+        onChange={(updatedContent, extractedTitle) => {
           setDocumentContent(updatedContent);
           setHeaderTitle(extractedTitle ?? "Untitled Asana");
         }}
