@@ -31,5 +31,9 @@ export default function CreateAsanaPage() {
     }
   };
 
-  return <DocEditor onSave={handleCreate} saving={saving} />;
+  return (
+    <main className="relative min-h-screen">
+      <DocEditor onSave={handleCreate} saving={saving} />
+    </main>
+  );
 }

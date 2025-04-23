@@ -139,11 +139,13 @@ export default function EditAsanaPage() {
   }
 
   return (
-    <DocEditor
-      initialTitle={initialTitle}
-      initialContent={initialContent}
-      onSave={handleUpdate}
-      saving={saving}
-    />
+    <main className="relative min-h-screen">
+      <DocEditor
+        initialTitle={initialTitle}
+        initialContent={initialContent}
+        onSave={handleUpdate}
+        saving={saving}
+      />
+    </main>
   );
 }

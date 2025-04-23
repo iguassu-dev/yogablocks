@@ -83,12 +83,12 @@ export default function DocumentDetailPage() {
 
   return (
     <main className="relative min-h-screen">
-      <PageContainer className="flex flex-col gap-6 pb-24">
+      <PageContainer className="pt-6 px-4 pb-24">
         {/* 🧠 Structured Read View replaces raw markdown */}
         <AsanaReadView title={document.title} content={document.content} />
 
         {/* ✏️ Edit Floating Action Button */}
-        <div className="flex justify-end pt-4">
+        <div className="flex justify-end mt-4">
           <FAB variant="edit" href={`/library/edit/${document.id}`} />
         </div>
       </PageContainer>

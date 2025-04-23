@@ -80,7 +80,7 @@ export default function LibraryPage() {
 
   return (
     <main className="relative min-h-screen">
-      <PageContainer className="flex flex-col gap-4 pb-24">
+      <PageContainer className="pt-6 px-4 pb-24">
         {asanas.length === 0 ? (
           <p className="text-center text-muted-foreground">No asanas found.</p>
         ) : (
@@ -95,7 +95,7 @@ export default function LibraryPage() {
           ))
         )}
         {/* Floating Action Button */}
-        <div className="flex justify-end pt-4">
+        <div className="flex justify-end mt-6">
           <FAB variant="create" href="/library/create" />
         </div>
       </PageContainer>
