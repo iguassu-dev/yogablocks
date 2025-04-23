@@ -2,10 +2,11 @@
 
 import { Triangle, CirclePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { stripMarkdown } from "@/lib/utils";
 
 type DocCardProps = {
   title: string;
-  preview: string;
+  preview: string; // markdown snippet
   showPlusIcon?: boolean;
 };
 
@@ -22,12 +23,13 @@ export function DocCard({
       </div>
 
       {/* Title, Preview, and optional Plus Button */}
-      <div className="flex-1 prose prose-sm prose-primary">
-        {/* Title as H4 in the same typographic scale */}
-        <h4 className="m-0">{title}</h4>
-
-        {/* Preview reuses prose paragraph styles */}
-        <p className="mt-1 line-clamp-2">{preview}</p>
+      <div className="flex-1">
+        {/* — Document title */}
+        <h4 className="m-0 text-lg font-semibold text-primary">{title}</h4>
+        {/* Plain-text preview (markdown stripped) */}
+        <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+          {stripMarkdown(preview)}
+        </p>
       </div>
 
       {/* Right Plus Icon (visible only if showPlusIcon = true) */}
