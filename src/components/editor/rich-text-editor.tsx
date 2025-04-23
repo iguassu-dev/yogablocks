@@ -45,8 +45,9 @@ export function RichTextEditor({
     editorProps: {
       attributes: {
         class: cn(
-          "prose prose-sm text-primary min-h-[300px] px-4 py-3",
-          "outline-none focus:outline-none bg-background"
+          "prose prose-sm prose-primary", // Use the same base typography
+          "min-h-[300px]", // Preserve minimum height
+          "outline-none focus:outline-none"
         ),
       },
     },
@@ -75,14 +76,15 @@ export function RichTextEditor({
   // 4. Render the Editor
   // ─────────────────────────────────────────────
   return (
-    <div className="w-full">
-      <EditorContent
-        editor={editor}
-        className="
-          prose prose-sm prose-primary
-             prose-h1:text-3xl prose-h1:font-semibold prose-h1:text-primary
-        "
-      />
-    </div>
+    <article
+      className="
+        prose prose-sm prose-primary
+        max-w-none
+        min-h-[300px]
+        outline-none focus:outline-none
+      "
+    >
+      <EditorContent editor={editor} />
+    </article>
   );
 }
