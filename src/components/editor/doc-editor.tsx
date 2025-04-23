@@ -44,11 +44,7 @@ export function DocEditor({
     await onSave(title, body);
   }, [documentContent, onSave]);
 
-  // 1️⃣ Sync the running title into our global Header
-  useEffect(() => {
-    const { title } = extractTitleAndBody(documentContent);
-    setHeaderTitle(title);
-  }, [documentContent, setHeaderTitle]);
+  // [Removed] redundant effect—header now updates from RichTextEditor’s parsed title
 
   // 2️⃣ Set save handler in header only once per stabilized handleSubmit
   useEffect(() => {
@@ -56,11 +52,15 @@ export function DocEditor({
   }, [handleSubmit, setOnSave]);
 
   return (
-    <PageContainer className="flex flex-col gap-4 pt-4 pb-24">
+    <PageContainer className="py-6 px-4">
       <RichTextEditor
         initialContent={documentContent}
-        onChange={(updatedContent /*, parsedTitle*/) => {
+        onChange={(
+          updatedContent,
+          extractedTitle /* Tiptap gives us the H1 text */
+        ) => {
           setDocumentContent(updatedContent);
+          setHeaderTitle(extractedTitle ?? "Untitled Asana");
         }}
       />
     </PageContainer>
