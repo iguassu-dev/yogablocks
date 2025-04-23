@@ -52,6 +52,21 @@ export function TypographyBody({ children, className }: TypographyProps) {
   );
 }
 
+export function TypographyBulletList({ children, className }: TypographyProps) {
+  return <ul className={cn("my-6 ml-6 list-disc [&>li]:mt-2", className)}></ul>;
+}
+
+export function TypographyOrderedList({
+  children,
+  className,
+}: TypographyProps) {
+  return (
+    <ol className={cn("my-6 ml-6 list-decimal [&>li]:mt-2", className)}>
+      {children}
+    </ol>
+  );
+}
+
 export function TypographyLink({ href, children }: TypographyLinkProps) {
   return (
     <Link
@@ -62,6 +77,7 @@ export function TypographyLink({ href, children }: TypographyLinkProps) {
     </Link>
   );
 }
+
 export function TypographyCaption({ children, className }: TypographyProps) {
   return (
     <small

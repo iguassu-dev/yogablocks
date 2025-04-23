@@ -3,6 +3,7 @@
 import { parseAsanaContent } from "@/lib/parseAsanaContent";
 import {
   TypographyBody,
+  TypographyBulletList,
   TypographyHeading1,
   TypographyHeading4,
 } from "@/components/ui/typography";
@@ -19,13 +20,13 @@ export function AsanaReadView({ title, content }: AsanaReadViewProps) {
   const renderList = (items?: string[]) => {
     if (!items || items.length === 0) return null;
     return (
-      <ul className="list-disc pl-5 space-y-1 text-sm">
+      <TypographyBulletList>
         {items.map((item, i) => (
           <li key={i} className="text-primary">
             {item}
           </li>
         ))}
-      </ul>
+      </TypographyBulletList>
     );
   };
 
@@ -56,7 +57,7 @@ export function AsanaReadView({ title, content }: AsanaReadViewProps) {
       {parsed.sanskrit && (
         <div>
           <TypographyHeading4>Sanskrit</TypographyHeading4>
-          <p>{parsed.sanskrit}</p>
+          <TypographyBody>{parsed.sanskrit}</TypographyBody>
         </div>
       )}
 
@@ -64,7 +65,7 @@ export function AsanaReadView({ title, content }: AsanaReadViewProps) {
       {parsed.category && (
         <div>
           <TypographyHeading4>Category</TypographyHeading4>
-          <p>{parsed.category}</p>
+          <TypographyBody>{parsed.category}</TypographyBody>
         </div>
       )}
 
