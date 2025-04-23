@@ -4,5 +4,8 @@
   "eslint.validate": ["javascript", "typescript", "typescriptreact"],
   "eslint.options": {
     "ignorePattern": [".next/**/*"]
-  }
+  },
+  "editor.minimap.sectionHeaderLetterSpacing": 1.2,
+  "terminal.integrated.lineHeight": 1.2,
+  "editor.fontSize": 13
 }

@@ -78,7 +78,10 @@ export function RichTextEditor({
     <div className="w-full">
       <EditorContent
         editor={editor}
-        className="editor-content min-h-[200px] p-4 bg-background"
+        className="
+          prose prose-sm prose-primary
+             prose-h1:text-3xl prose-h1:font-semibold prose-h1:text-primary
+        "
       />
     </div>
   );
