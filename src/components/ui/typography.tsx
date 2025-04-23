@@ -61,9 +61,7 @@ export function TypographyOrderedList({
   className,
 }: TypographyProps) {
   return (
-    <ol className={cn("my-6 ml-6 list-decimal [&>li]:mt-2", className)}>
-      {children}
-    </ol>
+    <ol className={cn("my-6 ml-6 list-decimal [&>li]:mt-2", className)}></ol>
   );
 }
 
