@@ -23,7 +23,6 @@ export function parseAsanaContent(content: string): ParsedAsana {
     .map((line) => line.trim())
     .filter(Boolean);
 
-  // Fallback: return raw markdown if fewer than 3 lines
   if (lines.length < 3) {
     return {
       title: lines[0] || "Untitled",
@@ -41,20 +40,9 @@ export function parseAsanaContent(content: string): ParsedAsana {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-
-    // Always store first line as title if not already set
-    // if (!result.title) {
-    //   result.title = line;
-    //   continue;
-    // }
-
-    // 🎴 Handle simple key-value lines
-    // ✨ Strip markdown bold first
     const cleanLine = line.replace(/^\*\*(.+?)\*\*/, "$1").trim();
 
-    // Now match key-value pairs
     const kvMatch = cleanLine.match(/^(Sanskrit Name|Category):\s*(.*)$/i);
-
     if (kvMatch) {
       const key = kvMatch[1].toLowerCase();
       const value = kvMatch[2];
@@ -63,11 +51,9 @@ export function parseAsanaContent(content: string): ParsedAsana {
       continue;
     }
 
-    // 📑 Identify the start of a list section
     const sectionMatch = cleanLine.match(
       /^(Benefits|Contraindications|Modifications|Preparatory Poses):$/i
     );
-
     if (sectionMatch) {
       currentSection = sectionMatch[1]
         .toLowerCase()
@@ -79,17 +65,18 @@ export function parseAsanaContent(content: string): ParsedAsana {
       continue;
     }
 
-    // 📌 List item inside a section
     if (line.startsWith("-") && currentSection) {
       (result[currentSection] as string[]).push(line.replace(/^-+/, "").trim());
       continue;
     }
 
-    // 🎲 If content doesn't match structure, store it for fallback rendering
     if (!currentSection && !result.remainingText) {
       result.remainingText = line;
     }
   }
+
+  // ✅ Fixed log
+  console.log("[🧠 Parsed RemainingText]", result.remainingText);
 
   return result;
 }

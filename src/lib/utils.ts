@@ -6,6 +6,7 @@ import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import rehypeStringify from "rehype-stringify";
+import remarkGfm from "remark-gfm";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -50,6 +51,7 @@ export function getPreview(content: string): string {
 export async function markdownToHtml(md: string): Promise<string> {
   const file = await unified()
     .use(remarkParse)
+    .use(remarkGfm)
     .use(remarkRehype)
     .use(rehypeStringify)
     .process(md);

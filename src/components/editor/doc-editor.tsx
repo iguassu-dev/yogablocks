@@ -63,7 +63,17 @@ export function DocEditor({
     // 2) Instantiate TurndownService here (moved inside callback)
     //    — ensures dependencies won't change every render
     const TurndownService = (await import("turndown")).default;
-    const turndownService = new TurndownService();
+    const turndownService = new TurndownService({ headingStyle: "atx" });
+
+    turndownService.addRule("heading2", {
+      filter: (node) => node.nodeName === "H2",
+      replacement: (content) => `\n\n## ${content}\n\n`,
+    });
+
+    turndownService.addRule("heading3", {
+      filter: (node) => node.nodeName === "H3",
+      replacement: (content) => `\n\n### ${content}\n\n`,
+    });
 
     // 3) Convert the HTML body back into Markdown
     const markdown = turndownService.turndown(htmlBody);

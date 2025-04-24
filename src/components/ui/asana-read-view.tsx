@@ -14,7 +14,6 @@ export function AsanaReadView({ title, content }: AsanaReadViewProps) {
   const parsed = parseAsanaContent(content);
   const [fallbackHtml, setFallbackHtml] = useState<string>("");
 
-  // Convert markdown to HTML for fallback
   useEffect(() => {
     async function convert() {
       if (parsed.remainingText) {
@@ -58,10 +57,10 @@ export function AsanaReadView({ title, content }: AsanaReadViewProps) {
       {renderField("Modifications", parsed.modifications)}
       {renderField("Preparatory Poses", parsed.preparatory_poses)}
 
-      {/* Updated fallback rendering */}
+      {/* ✅ Final Fix: Display full HTML */}
       {fallbackHtml && (
         <div
-          className="prose prose-sm prose-primary"
+          className="prose prose-sm prose-primary mt-4"
           dangerouslySetInnerHTML={{ __html: fallbackHtml }}
         />
       )}
