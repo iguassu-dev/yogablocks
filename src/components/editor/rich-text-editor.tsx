@@ -1,12 +1,14 @@
-// Tiptap-based WYSIWYG editor
+// src/components/editor/rich-text-editor.tsx
 "use client";
 
 import { useEditor, EditorContent } from "@tiptap/react";
+import type { Editor } from "@tiptap/react";
+import { KeyboardToolbar } from "@/components/editor/keyboard-toolbar";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import Link from "@tiptap/extension-link";
 import { useEffect } from "react";
-import { cn } from "@/lib/utils"; // Tailwind merge helper
+import { cn } from "@/lib/utils";
 
 // ─────────────────────────────────────────────
 // 1. Props for reusability
@@ -14,6 +16,7 @@ import { cn } from "@/lib/utils"; // Tailwind merge helper
 type RichTextEditorProps = {
   initialContent?: string; // prefill editor (used for Edit mode)
   onChange: (htmlContent: string, extractedTitle?: string) => void;
+  onReady?: (editor: Editor) => void;
   // live update to parent
   editable?: boolean; // optional toggle for read-only view
 };
@@ -21,6 +24,7 @@ type RichTextEditorProps = {
 export function RichTextEditor({
   initialContent = "",
   onChange,
+  onReady,
   editable = true,
 }: RichTextEditorProps) {
   // ─────────────────────────────────────────────
@@ -71,6 +75,11 @@ export function RichTextEditor({
       editor.commands.setContent(initialContent);
     }
   }, [editor, initialContent]);
+  useEffect(() => {
+    if (editor && onReady) {
+      onReady(editor);
+    }
+  }, [editor, onReady]);
 
   // ─────────────────────────────────────────────
   // 4. Render the Editor
@@ -85,6 +94,7 @@ export function RichTextEditor({
       "
     >
       <EditorContent editor={editor} />
+      <KeyboardToolbar editor={editor} />
     </article>
   );
 }

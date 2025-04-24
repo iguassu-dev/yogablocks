@@ -1,7 +1,8 @@
 // src/components/editor/doc-editor.tsx
 
 "use client";
-
+import type { Editor } from "@tiptap/react";
+import { KeyboardToolbar } from "@/components/editor/keyboard-toolbar";
 import { useCallback, useEffect, useState } from "react";
 import { PageContainer } from "@/components/layouts/page-container";
 import { RichTextEditor } from "./rich-text-editor";
@@ -29,6 +30,7 @@ export function DocEditor({
   // — Header context
   const { setTitle: setHeaderTitle, setOnSave } = useHeader();
 
+  const [editorInstance, setEditorInstance] = useState<Editor | null>(null);
   // ─────────────────────────────────────────────
   // Load Markdown → HTML for the editor on mount
   // ─────────────────────────────────────────────
@@ -103,7 +105,9 @@ export function DocEditor({
           setDocumentContent(updatedContent);
           setHeaderTitle(extractedTitle ?? "Untitled Asana");
         }}
+        onReady={(editor) => setEditorInstance(editor)}
       />
+      <KeyboardToolbar editor={editorInstance} />
     </PageContainer>
   );
 }
