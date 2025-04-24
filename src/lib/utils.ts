@@ -1,3 +1,5 @@
+// src/lib/utils.ts
+
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { unified } from "unified";
@@ -8,15 +10,15 @@ import rehypeStringify from "rehype-stringify";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-export function getPreview(content: string) {
-  return content.split("\n").slice(0, 3).join("\n");
-}
+
 /**
  * Remove common Markdown syntax so we display plain text.
  */
 export function stripMarkdown(input: string): string {
   return (
     input
+      // Remove any leftover pure-underline lines (e.g. "-----" or "=====")
+      .replace(/^[-=]{2,}$/gm, "")
       // Remove image syntax: ![alt](url)
       .replace(/\!\[.*?\]\(.*?\)/g, "")
       // Convert links [text](url) → text
@@ -30,6 +32,18 @@ export function stripMarkdown(input: string): string {
       .trim()
   );
 }
+
+/**
+ * Strip all markdown and HTML; Truncate visible characters to simulate 2 lines
+ */
+export function getPreview(content: string): string {
+  const stripped = stripMarkdown(content)
+    .replace(/(<([^>]+)>)/gi, "") // Remove any HTML tags
+    .replace(/\s+/g, " ") // Collapse whitespace
+    .trim();
+  return stripped.split(" ").slice(0, 25).join(" "); // ~2 lines worth of words
+}
+
 /**
  * Convert Markdown string → HTML string.
  */

@@ -26,8 +26,8 @@ export function DocCard({
       <div className="flex-1">
         {/* — Document title */}
         <h4 className="m-0 text-lg font-semibold text-primary">{title}</h4>
-        {/* Plain-text preview (markdown stripped) */}
-        <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+        {/* Plain-text preview (markdown stripped) clamped to 2 lines */}
+        <p className="mt-1 text-sm text-muted-foreground overflow-hidden line-clamp-2">
           {stripMarkdown(preview)}
         </p>
       </div>
