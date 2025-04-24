@@ -12,24 +12,30 @@ type AsanaReadViewProps = {
 
 export function AsanaReadView({ title, content }: AsanaReadViewProps) {
   const parsed = parseAsanaContent(content);
-  const [fallbackHtml, setFallbackHtml] = useState<string>("");
+  const [fallbackHtml, setFallbackHtml] = useState("");
+
+  const hasStructuredFields =
+    parsed.benefits ||
+    parsed.contraindications ||
+    parsed.modifications ||
+    parsed.preparatory_poses;
 
   useEffect(() => {
     async function convert() {
-      if (parsed.remainingText) {
+      if (!hasStructuredFields && parsed.remainingText) {
         const html = await markdownToHtml(parsed.remainingText);
+        console.log("[🧾 Final fallback HTML]", html);
         setFallbackHtml(html);
       }
     }
     convert();
-  }, [parsed.remainingText]);
+  }, [parsed.remainingText, hasStructuredFields]);
 
   function renderField(
     label: string,
     value?: string | string[]
   ): React.ReactNode {
     if (!value || (Array.isArray(value) && value.length === 0)) return null;
-
     return (
       <>
         <h2>{label}</h2>
@@ -50,15 +56,16 @@ export function AsanaReadView({ title, content }: AsanaReadViewProps) {
     <article className="prose prose-sm prose-primary max-w-none">
       <h1>{title}</h1>
 
-      {renderField("Sanskrit", parsed.sanskrit)}
-      {renderField("Category", parsed.category)}
-      {renderField("Benefits", parsed.benefits)}
-      {renderField("Contraindications", parsed.contraindications)}
-      {renderField("Modifications", parsed.modifications)}
-      {renderField("Preparatory Poses", parsed.preparatory_poses)}
-
-      {/* ✅ Final Fix: Display full HTML */}
-      {fallbackHtml && (
+      {hasStructuredFields ? (
+        <>
+          {renderField("Sanskrit", parsed.sanskrit)}
+          {renderField("Category", parsed.category)}
+          {renderField("Benefits", parsed.benefits)}
+          {renderField("Contraindications", parsed.contraindications)}
+          {renderField("Modifications", parsed.modifications)}
+          {renderField("Preparatory Poses", parsed.preparatory_poses)}
+        </>
+      ) : (
         <div
           className="prose prose-sm prose-primary mt-4"
           dangerouslySetInnerHTML={{ __html: fallbackHtml }}
