@@ -9,17 +9,69 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Link from "@tiptap/extension-link";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { Extension } from "@tiptap/core";
+import { Plugin } from "prosemirror-state"; // Missing import
 
 // ─────────────────────────────────────────────
 // 1. Props for reusability
 // ─────────────────────────────────────────────
 type RichTextEditorProps = {
-  initialContent?: string; // prefill editor (used for Edit mode)
+  initialContent?: string;
   onChange: (htmlContent: string, extractedTitle?: string) => void;
   onReady?: (editor: Editor) => void;
-  // live update to parent
-  editable?: boolean; // optional toggle for read-only view
+  editable?: boolean;
 };
+
+// Create title protection extension before using it
+const TitleProtection = Extension.create({
+  name: "titleProtection",
+
+  addKeyboardShortcuts() {
+    return {
+      "Mod-b": ({ editor }) => {
+        const { from } = editor.state.selection;
+        const isInTitle =
+          editor.isActive("heading", { level: 1 }) &&
+          editor.state.doc.resolve(from).start() === 1;
+
+        return isInTitle ? true : false;
+      },
+      "Mod-i": ({ editor }) => {
+        const { from } = editor.state.selection;
+        const isInTitle =
+          editor.isActive("heading", { level: 1 }) &&
+          editor.state.doc.resolve(from).start() === 1;
+
+        return isInTitle ? true : false;
+      },
+    };
+  },
+
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        props: {
+          handleDOMEvents: {
+            keydown: (view, event) => {
+              if (
+                event.key === "#" &&
+                view.state.selection.$from.parent.type.name === "heading"
+              ) {
+                const { from } = view.state.selection;
+                const isInTitle = view.state.doc.resolve(from).start() === 1;
+
+                if (isInTitle) {
+                  return true;
+                }
+              }
+              return false;
+            },
+          },
+        },
+      }),
+    ];
+  },
+});
 
 export function RichTextEditor({
   initialContent = "",
@@ -35,7 +87,7 @@ export function RichTextEditor({
     editable,
     extensions: [
       StarterKit.configure({
-        heading: { levels: [1, 2, 3] }, // Enable H1-H3
+        heading: { levels: [1, 2, 3] },
         bulletList: { keepMarks: true, keepAttributes: false },
         orderedList: { keepMarks: true, keepAttributes: false },
       }),
@@ -45,24 +97,56 @@ export function RichTextEditor({
       Placeholder.configure({
         placeholder: "Start with a title (H1)...",
       }),
+      // Add the title protection extension
+      TitleProtection,
+      // Add a handler to ensure the first heading is always H1
+      Extension.create({
+        name: "enforceH1Title",
+        addProseMirrorPlugins() {
+          return [
+            new Plugin({
+              appendTransaction(transactions, oldState, newState) {
+                if (!transactions.some((tr) => tr.docChanged)) return null;
+
+                const tr = newState.tr;
+
+                let foundHeading = false;
+                newState.doc.descendants((node, pos) => {
+                  if (foundHeading) return false;
+
+                  if (node.type.name === "heading" && node.attrs.level !== 1) {
+                    tr.setNodeMarkup(pos, undefined, { level: 1 });
+                    foundHeading = true;
+                    return false;
+                  } else if (node.type.name === "heading") {
+                    foundHeading = true;
+                    return false;
+                  }
+
+                  return true;
+                });
+
+                return tr.steps.length ? tr : null;
+              },
+            }),
+          ];
+        },
+      }),
     ],
     editorProps: {
       attributes: {
         class: cn(
-          "prose prose-sm prose-primary", // Use the same base typography
-          "min-h-[300px]", // Preserve minimum height
+          "prose prose-sm prose-primary",
+          "min-h-[300px]",
           "outline-none focus:outline-none"
         ),
       },
     },
-    // 🔄 Handle content updates
     onUpdate({ editor }) {
       const html = editor.getHTML();
-      // ⛏️ Extract the first <h1> from the HTML
       const match = html.match(/<h1[^>]*>(.*?)<\/h1>/i);
       const extractedTitle =
         match?.[1]?.replace(/<[^>]+>/g, "").trim() || "Untitled Asana";
-      // Emit content and title
       onChange(html, extractedTitle);
     },
   });
@@ -75,6 +159,7 @@ export function RichTextEditor({
       editor.commands.setContent(initialContent);
     }
   }, [editor, initialContent]);
+
   useEffect(() => {
     if (editor && onReady) {
       onReady(editor);

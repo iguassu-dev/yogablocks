@@ -45,16 +45,34 @@ export function DocEditor({
   }, [initialContent, initialTitle, setHeaderTitle]);
 
   // ─────────────────────────────────────────────
-  // Extract <h1> title and body HTML
+  // Extract title and body HTML
   // ─────────────────────────────────────────────
   function extractTitleAndBody(html: string) {
     const doc = new DOMParser().parseFromString(html, "text/html");
-    const h1 = doc.querySelector("h1");
-    const title = (h1?.textContent || "").trim() || "Untitled Asana";
-    if (h1) h1.remove();
-    return { title, body: doc.body.innerHTML.trim() };
-  }
 
+    // Look for any heading (h1, h2, h3, etc.) to extract the title
+    const heading = doc.querySelector("h1, h2, h3, h4, h5, h6");
+
+    // If a heading is found, use it as the title
+    let title = "Untitled Asana";
+    if (heading) {
+      title = (heading.textContent || "").trim();
+      // Remove the heading from the body
+      heading.remove();
+    } else {
+      // If no heading, look for the first paragraph and use that
+      const firstPara = doc.querySelector("p");
+      if (firstPara) {
+        title = (firstPara.textContent || "").trim();
+        firstPara.remove();
+      }
+    }
+
+    return {
+      title: title || "Untitled Asana",
+      body: doc.body.innerHTML.trim(),
+    };
+  }
   // ─────────────────────────────────────────────
   // Save handler: convert HTML → Markdown, then onSave
   // ─────────────────────────────────────────────
