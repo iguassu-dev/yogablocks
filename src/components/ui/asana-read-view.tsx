@@ -22,14 +22,15 @@ export function AsanaReadView({ title, content }: AsanaReadViewProps) {
 
   useEffect(() => {
     async function convert() {
-      if (!hasStructuredFields && parsed.remainingText) {
+      // Always attempt to convert remaining text if it exists
+      if (parsed.remainingText) {
         const html = await markdownToHtml(parsed.remainingText);
         console.log("[🧾 Final fallback HTML]", html);
         setFallbackHtml(html);
       }
     }
     convert();
-  }, [parsed.remainingText, hasStructuredFields]);
+  }, [parsed.remainingText]);
 
   function renderField(
     label: string,
@@ -56,16 +57,16 @@ export function AsanaReadView({ title, content }: AsanaReadViewProps) {
     <article className="prose prose-sm prose-primary max-w-none">
       <h1>{title}</h1>
 
-      {hasStructuredFields ? (
-        <>
-          {renderField("Sanskrit", parsed.sanskrit)}
-          {renderField("Category", parsed.category)}
-          {renderField("Benefits", parsed.benefits)}
-          {renderField("Contraindications", parsed.contraindications)}
-          {renderField("Modifications", parsed.modifications)}
-          {renderField("Preparatory Poses", parsed.preparatory_poses)}
-        </>
-      ) : (
+      {/* Display structured fields if available */}
+      {renderField("Sanskrit", parsed.sanskrit)}
+      {renderField("Category", parsed.category)}
+      {renderField("Benefits", parsed.benefits)}
+      {renderField("Contraindications", parsed.contraindications)}
+      {renderField("Modifications", parsed.modifications)}
+      {renderField("Preparatory Poses", parsed.preparatory_poses)}
+
+      {/* Always show remaining text if it exists */}
+      {parsed.remainingText && (
         <div
           className="prose prose-sm prose-primary mt-4"
           dangerouslySetInnerHTML={{ __html: fallbackHtml }}

@@ -34,9 +34,19 @@ export function parseAsanaContent(content: string): ParsedAsana {
     title: "",
   };
 
-  let currentSection:
-    | keyof Omit<ParsedAsana, "title" | "remainingText">
-    | null = null;
+  // Define the allowed section keys
+  type SectionKey =
+    | "sanskrit"
+    | "category"
+    | "benefits"
+    | "contraindications"
+    | "modifications"
+    | "preparatory_poses";
+
+  let currentSection: SectionKey | null = null;
+
+  // Store lines that don't match any section
+  let unmatchedLines: string[] = [];
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
@@ -55,24 +65,39 @@ export function parseAsanaContent(content: string): ParsedAsana {
       /^(Benefits|Contraindications|Modifications|Preparatory Poses):$/i
     );
     if (sectionMatch) {
-      currentSection = sectionMatch[1]
-        .toLowerCase()
-        .replace(" ", "_") as keyof Omit<
-        ParsedAsana,
-        "title" | "remainingText"
-      >;
-      (result[currentSection] as string[]) = [];
+      const sectionName = sectionMatch[1].toLowerCase().replace(/\s+/g, "_");
+
+      // Type guard to ensure sectionName is a valid SectionKey
+      if (
+        sectionName === "benefits" ||
+        sectionName === "contraindications" ||
+        sectionName === "modifications" ||
+        sectionName === "preparatory_poses"
+      ) {
+        currentSection = sectionName;
+        // Initialize the array if it doesn't exist
+        result[currentSection] = result[currentSection] || [];
+      }
       continue;
     }
 
     if (line.startsWith("-") && currentSection) {
+      // Handle the case where the array might not be initialized
+      if (!result[currentSection]) {
+        result[currentSection] = [];
+      }
+      // Add the item to the array
       (result[currentSection] as string[]).push(line.replace(/^-+/, "").trim());
       continue;
     }
 
-    if (!currentSection && !result.remainingText) {
-      result.remainingText = line;
-    }
+    // If line doesn't match any other pattern, collect it
+    unmatchedLines.push(line);
+  }
+
+  // If we have unmatched lines, join them as remainingText
+  if (unmatchedLines.length > 0) {
+    result.remainingText = unmatchedLines.join("\n");
   }
 
   // ✅ Fixed log
