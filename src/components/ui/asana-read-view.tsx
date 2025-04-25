@@ -14,12 +14,6 @@ export function AsanaReadView({ title, content }: AsanaReadViewProps) {
   const parsed = parseAsanaContent(content);
   const [fallbackHtml, setFallbackHtml] = useState("");
 
-  const hasStructuredFields =
-    parsed.benefits ||
-    parsed.contraindications ||
-    parsed.modifications ||
-    parsed.preparatory_poses;
-
   useEffect(() => {
     async function convert() {
       // Always attempt to convert remaining text if it exists
@@ -57,7 +51,7 @@ export function AsanaReadView({ title, content }: AsanaReadViewProps) {
     <article className="prose prose-sm prose-primary max-w-none">
       <h1>{title}</h1>
 
-      {/* Display structured fields if available */}
+      {/* Always show structured fields if available */}
       {renderField("Sanskrit", parsed.sanskrit)}
       {renderField("Category", parsed.category)}
       {renderField("Benefits", parsed.benefits)}
@@ -65,7 +59,7 @@ export function AsanaReadView({ title, content }: AsanaReadViewProps) {
       {renderField("Modifications", parsed.modifications)}
       {renderField("Preparatory Poses", parsed.preparatory_poses)}
 
-      {/* Always show remaining text if it exists */}
+      {/* Always show remaining text if available */}
       {parsed.remainingText && (
         <div
           className="prose prose-sm prose-primary mt-4"

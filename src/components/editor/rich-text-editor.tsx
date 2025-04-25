@@ -94,8 +94,21 @@ export function RichTextEditor({
       Link.configure({
         openOnClick: false,
       }),
+      // Configure placeholder text for different node types
       Placeholder.configure({
-        placeholder: "Start with a title (H1)...",
+        placeholder: ({ node }) => {
+          // Show specific placeholder for h1 (title)
+          if (node.type.name === "heading" && node.attrs.level === 1) {
+            return "Untitled Asana";
+          }
+
+          // Default placeholder for other content
+          return "Start typing content here...";
+        },
+        // Only show placeholder when node is empty
+        showOnlyWhenEditable: true,
+        showOnlyCurrent: true,
+        includeChildren: false, // Don't include placeholders in child nodes
       }),
       // Add the title protection extension
       TitleProtection,

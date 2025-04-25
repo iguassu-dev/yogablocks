@@ -46,7 +46,7 @@ export function parseAsanaContent(content: string): ParsedAsana {
   let currentSection: SectionKey | null = null;
 
   // Store lines that don't match any section
-  let unmatchedLines: string[] = [];
+  const unmatchedLines: string[] = [];
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
