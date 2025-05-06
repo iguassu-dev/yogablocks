@@ -9,9 +9,15 @@ type SearchInputProps = {
   value: string;
   onChange: (value: string) => void;
   onCancel: () => void;
+  className?: string;
 };
 
-export function SearchInput({ value, onChange, onCancel }: SearchInputProps) {
+export function SearchInput({
+  value,
+  onChange,
+  onCancel,
+  className = "",
+}: SearchInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -19,7 +25,9 @@ export function SearchInput({ value, onChange, onCancel }: SearchInputProps) {
   }, []);
 
   return (
-    <div className="flex items-center gap-2 w-full max-w-screen-lg px-4 pt-2 pb-2 mx-auto transition-all duration-300 ease-in-out transform animate-fade-slide">
+    <div
+      className={`flex items-center gap-2 w-full max-w-screen-lg px-4 pt-2 pb-2 mx-auto transition-all duration-300 ease-in-out transform animate-fade-slide ${className}`}
+    >
       {/* ───── Search Field ───── */}
       <div className="relative flex-1">
         <Input
