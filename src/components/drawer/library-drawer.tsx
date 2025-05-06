@@ -3,11 +3,14 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useHeader } from "@/hooks/useHeader";
+import { useParams } from "next/navigation";
 import supabase from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
 import { DocCard } from "@/components/ui/doc-card";
 import { getPreview } from "@/lib/utils";
+import { fetchLinksForDocument, upsertLink } from "@/lib/linking";
 
+// Type for documents fetched from the library
 type Document = {
   id: string;
   title: string;
@@ -16,9 +19,16 @@ type Document = {
 
 export function LibraryDrawer() {
   const { isLibraryDrawerOpen, setIsLibraryDrawerOpen } = useHeader();
+  const params = useParams();
+  const sourceId = params.id as string; // Current document being edited
+
+  // State: list of library documents
   const [documents, setDocuments] = useState<Document[]>([]);
+  // State: existing links for the current document (to compute next position)
+  const [links, setLinks] = useState<{ target_id: string }[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Fetch all asana documents when drawer opens
   useEffect(() => {
     async function fetchDocuments() {
       const { data, error } = await supabase
@@ -26,18 +36,41 @@ export function LibraryDrawer() {
         .select("id, title, content")
         .eq("doc_type", "asana")
         .order("title", { ascending: true });
-
-      if (data) {
-        setDocuments(data);
-      } else {
-        console.error(error);
-      }
+      if (data) setDocuments(data as Document[]);
+      else console.error(error);
     }
-
-    if (isLibraryDrawerOpen) {
-      fetchDocuments();
-    }
+    if (isLibraryDrawerOpen) fetchDocuments();
   }, [isLibraryDrawerOpen]);
+
+  // Load existing links when drawer opens or sourceId changes
+  useEffect(() => {
+    if (!isLibraryDrawerOpen || !sourceId) return;
+    fetchLinksForDocument(sourceId)
+      .then((data) => {
+        if (data) {
+          setLinks(data.map((link) => ({ target_id: link.target_id })));
+        } else {
+          setLinks([]);
+        }
+      })
+      .catch(console.error);
+  }, [isLibraryDrawerOpen, sourceId]);
+
+  // Handler: insert or update a link for the current document
+  async function handleInsert(doc: Document) {
+    try {
+      const nextPosition = links.length;
+      await upsertLink({
+        source_id: sourceId,
+        target_id: doc.id,
+        label: doc.title,
+        position: nextPosition,
+      });
+      setLinks((prev) => [...prev, { target_id: doc.id }]);
+    } catch (error) {
+      console.error("Failed to insert link", error);
+    }
+  }
 
   const filteredDocuments = documents.filter((doc) =>
     doc.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -62,7 +95,8 @@ export function LibraryDrawer() {
                 key={doc.id}
                 title={doc.title}
                 preview={getPreview(doc.content)}
-                showPlusIcon={true} // Show Plus Icon inside Drawer
+                showPlusIcon
+                onPlusClick={() => handleInsert(doc)}
               />
             ))
           ) : (

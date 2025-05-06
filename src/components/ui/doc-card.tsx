@@ -4,10 +4,11 @@ import { Triangle, CirclePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { stripMarkdown } from "@/lib/utils";
 
-type DocCardProps = {
+export type DocCardProps = {
   title: string;
   preview: string; // markdown snippet
   showPlusIcon?: boolean;
+  onPlusClick?: () => void; // Add onPlusClick as an optional property
 };
 
 export function DocCard({

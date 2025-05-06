@@ -1,78 +1,61 @@
-// Document detail page
-// src/app/(authenticated)/library/[id]/page.tsx
-
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import supabase from "@/lib/supabaseClient";
 import { useHeader } from "@/hooks/useHeader";
+import { useLibrary, LibraryDoc } from "@/hooks/useLibrary";
 import { PageContainer } from "@/components/layouts/page-container";
 import { FAB } from "@/components/ui/FAB";
 import { AsanaReadView } from "@/components/ui/asana-read-view";
 
+interface Document {
+  id: string;
+  title: string;
+  content: string;
+}
+
 export default function DocumentDetailPage() {
   const { id } = useParams();
-  const searchParams = useSearchParams();
   const { setTitle } = useHeader();
-
   const [document, setDocument] = useState<Document | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  type Document = {
-    id: string;
-    title: string;
-    content: string;
-  };
+  // **Fetch all asanas for pose-link lookups**
+  const docs: LibraryDoc[] = useLibrary();
 
   useEffect(() => {
     async function fetchDocument() {
-      console.log("Fetching document for viewing:", id);
       const { data, error } = await supabase
         .from("documents")
-        .select("*")
+        .select("id, title, content")
         .eq("id", id)
         .single();
 
       if (error) {
         console.error("Error fetching document:", error);
         setError(error.message);
-      } else {
-        console.log("Document fetched for viewing:", data);
-        console.log("🔍 Loaded content:", JSON.stringify(data.content));
-        setDocument(data);
+      } else if (data) {
+        setDocument(data as Document);
         setTitle(data.title);
       }
       setLoading(false);
     }
 
-    const cameFromEdit = searchParams.get("from") === "edit";
-    if (id) {
-      fetchDocument();
-
-      if (cameFromEdit) {
-        sessionStorage.setItem("backToLibrary", "true");
-      } else {
-        sessionStorage.removeItem("backToLibrary");
-      }
-    }
+    if (id) fetchDocument();
 
     return () => {
       setTitle("YogaBlocks");
     };
-  }, [id, searchParams, setTitle]);
+  }, [id, setTitle]);
 
   if (loading) {
-    return (
-      <p className="text-center mt-10 text-muted-foreground">Loading...</p>
-    );
+    return <p className="text-center mt-10 text-muted-foreground">Loading…</p>;
   }
-
   if (error) {
     return <p className="text-center mt-10 text-destructive">Error: {error}</p>;
   }
-
   if (!document) {
     return (
       <p className="text-center mt-10 text-muted-foreground">
@@ -84,10 +67,13 @@ export default function DocumentDetailPage() {
   return (
     <main className="relative min-h-screen">
       <PageContainer className="pt-6 px-4 pb-24">
-        {/* 🧠 Structured Read View replaces raw markdown */}
-        <AsanaReadView title={document.title} content={document.content} />
+        {/* Pass docs into the read view for link resolution */}
+        <AsanaReadView
+          title={document.title}
+          content={document.content}
+          docs={docs}
+        />
 
-        {/* ✏️ Edit Floating Action Button */}
         <div className="flex justify-end mt-4">
           <FAB variant="edit" href={`/library/edit/${document.id}`} />
         </div>

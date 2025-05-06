@@ -155,26 +155,41 @@ export function DocEditor({
   );
 }
 
+// Define a type for the TipTap node
+interface TipTapNode {
+  type?: string;
+  attrs?: {
+    href?: string;
+  };
+  content?: TipTapNode[];
+}
+
 /**
  * collectLinks
  * — Traverses a TipTap JSON document to find all 'link' nodes
  * — Returns an array of { href, text } for each link found
  */
-function collectLinks(doc: any): { href: string; text: string }[] {
+function collectLinks(doc: TipTapNode): { href: string; text: string }[] {
   const links: { href: string; text: string }[] = [];
 
-  function traverse(node: any) {
+  function traverse(node: TipTapNode) {
     if (node.type === "link" && node.attrs?.href) {
-      const text = node.content?.map((c: any) => c.text).join("") || "";
+      const text =
+        node.content
+          ?.map((c) => {
+            if (typeof c === "string") {
+              return c;
+            }
+            return "";
+          })
+          .join("") || "";
       links.push({ href: node.attrs.href, text });
     }
-    if (Array.isArray(node.content)) {
-      node.content.forEach(traverse);
-    }
+
+    // Recursively traverse child nodes
+    node.content?.forEach(traverse);
   }
 
-  if (Array.isArray(doc.content)) {
-    doc.content.forEach(traverse);
-  }
+  traverse(doc);
   return links;
 }
