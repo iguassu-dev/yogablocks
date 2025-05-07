@@ -4,7 +4,7 @@
 
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation"; // — Link Parsing & Rendering —
+import { useParams } from "next/navigation"; // — Link Parsing & Rendering for sourceId —
 import Link from "next/link"; // — Link Parsing & Rendering —
 import { parseAsanaContent } from "@/lib/parseAsanaContent"; // parses structured fields
 import { markdownToHtml } from "@/lib/utils"; // fallback markdown renderer
@@ -121,20 +121,6 @@ export function AsanaReadView({ title, content, docs }: AsanaReadViewProps) {
                 </li>
               );
             })}
-          </ul>
-        </>
-      )}
-      {/* — Link Parsing & Rendering —
-          Render any relational links stored in document_links */}
-      {links.length > 0 && (
-        <>
-          <h2>Links</h2>
-          <ul>
-            {links.map((link) => (
-              <li key={link.id}>
-                <Link href={`/library/${link.target_id}`}>{link.label}</Link>
-              </li>
-            ))}
           </ul>
         </>
       )}

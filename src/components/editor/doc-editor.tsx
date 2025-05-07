@@ -3,7 +3,6 @@
 
 import type { Editor } from "@tiptap/react";
 import { useEffect, useCallback, useState } from "react";
-import { useParams } from "next/navigation";
 import { KeyboardToolbar } from "@/components/editor/keyboard-toolbar";
 import { PageContainer } from "@/components/layouts/page-container";
 import { RichTextEditor } from "./rich-text-editor";
@@ -37,10 +36,6 @@ export function DocEditor({
   const [documentContent, setDocumentContent] = useState<string>("");
   const { setTitle: setHeaderTitle, setOnSave, setOnInsertLink } = useHeader();
   const [editorInstance, setEditorInstance] = useState<Editor | null>(null);
-
-  // (sourceId isn’t used in Approach 1; remove import of upsertLink/collectLinks)
-  const params = useParams();
-  const sourceId = params.id as string | undefined;
 
   // ──────────────────────────────────────────────────────────────────────
   // 1. Initialize editor with HTML converted from Markdown

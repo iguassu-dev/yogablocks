@@ -6,6 +6,7 @@ import { useRouter, useParams } from "next/navigation";
 import supabase from "@/lib/supabaseClient";
 import { DocEditor } from "@/components/editor/doc-editor";
 import { toast } from "sonner";
+import { fetchLinksForDocument, upsertLink, deleteLink } from "@/lib/linking";
 
 /**
  * EditAsanaPage
@@ -84,6 +85,40 @@ export default function EditAsanaPage() {
       .update({ title, content, updated_at: new Date().toISOString() })
       .eq("id", documentId)
       .select();
+    if (!updateError) {
+      // 1. Extract all [Label](/library/{id}) matches from markdown
+      const linkPattern = /\[([^\]]+)\]\(\/library\/([0-9a-fA-F-]{36})\)/g;
+      const parsedLinks: { label: string; targetId: string }[] = [];
+      let match;
+      while ((match = linkPattern.exec(content)) !== null) {
+        parsedLinks.push({ label: match[1], targetId: match[2] });
+      }
+
+      // 2. Fetch existing links
+      const existing = (await fetchLinksForDocument(documentId)) || [];
+
+      // 3. Delete removed links
+      for (const row of existing) {
+        if (!parsedLinks.some((p) => p.targetId === row.target_id)) {
+          await deleteLink(row.id);
+        }
+      }
+
+      // 4. Upsert (insert or update) current links in order
+      for (let i = 0; i < parsedLinks.length; i++) {
+        const { label, targetId } = parsedLinks[i];
+        const existingRow = existing.find((r) => r.target_id === targetId);
+        await upsertLink({
+          id: existingRow?.id, // undefined for brand-new links
+          source_id: documentId,
+          target_id: targetId,
+          label,
+          position: i,
+        });
+      }
+
+      // 5. Then navigate back (you already have your toast & router.replace here)
+    }
 
     if (updateError) {
       setError(updateError.message);

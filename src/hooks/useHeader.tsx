@@ -119,8 +119,8 @@ export function HeaderProvider({ children }: { children: React.ReactNode }) {
       backToLibrary,
       onSave,
       onInsertLink,
-      // Note: `setOnSave` and `setOnInsertLink` are stable (no deps),
-      // so you don’t need to include them here.
+      setOnSave,
+      setOnInsertLink,
     ]
   );
 

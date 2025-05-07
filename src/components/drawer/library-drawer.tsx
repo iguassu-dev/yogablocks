@@ -1,5 +1,4 @@
 // src/components/drawer/library-drawer.tsx
-// src/components/drawer/library-drawer.tsx
 "use client";
 
 import {
@@ -88,11 +87,12 @@ export function LibraryDrawer() {
       setLinks((prev) => [...prev, { target_id: doc.id }]);
       // Tell the editor to insert the link HTML
       onInsertLink({ id: doc.id, title: doc.title });
-    } catch (err) {
-      console.error("Failed to insert link", {
-        error: (err as any)?.message ?? err,
-        details: (err as any)?.details,
-      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Failed to insert link:", error.message);
+      } else {
+        console.error("Failed to insert link:", error);
+      }
     }
   }
 
