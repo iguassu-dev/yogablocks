@@ -37,7 +37,8 @@ export default function EditAsanaPage() {
         .single();
 
       if (data) {
-        setInitialTitle(data.title);
+        // Fallback to “Untitled Asana” when the stored title is empty
+        setInitialTitle(data.title || "Untitled Asana");
         setInitialContent(data.content);
       } else {
         setError(error?.message || "Failed to fetch document");

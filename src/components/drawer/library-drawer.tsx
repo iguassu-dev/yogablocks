@@ -148,7 +148,7 @@ export function LibraryDrawer() {
               filtered.map((doc) => (
                 <DocCard
                   key={doc.id}
-                  title={doc.title}
+                  title={doc.title?.trim() || "Untitled Asana"}
                   preview={getPreview(doc.content)}
                   showPlusIcon
                   onPlusClick={() => handleInsert(doc)}
