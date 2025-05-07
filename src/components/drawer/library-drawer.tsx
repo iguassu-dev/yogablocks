@@ -11,6 +11,7 @@ import { Search } from "lucide-react";
 import { useHeader } from "@/hooks/useHeader";
 import { useParams } from "next/navigation";
 import supabase from "@/lib/supabaseClient";
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { DocCard } from "@/components/ui/doc-card";
 import { getPreview } from "@/lib/utils";
@@ -83,63 +84,75 @@ export function LibraryDrawer() {
 
   return (
     <Dialog open={isLibraryDrawerOpen} onOpenChange={setIsLibraryDrawerOpen}>
-      <DialogContent className="h-full w-full max-w-screen-sm flex flex-col p-4">
-        {/* Drag handle */}
-        <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-muted" />
+      <DialogContent asChild>
+        <motion.div
+          className="h-full w-full max-w-screen-sm flex flex-col p-4"
+          drag="y"
+          dragDirectionLock
+          dragElastic={0.2}
+          onDragEnd={(_, info) => {
+            if (info.offset.y > 100) setIsLibraryDrawerOpen(false);
+          }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          style={{ touchAction: "none" }}
+        >
+          {/* Drag handle */}
+          <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-muted" />
 
-        <DialogHeader className="!flex-row items-center justify-between !gap-0 !text-center sm:!text-center">
-          {!isSearchActive ? (
-            <>
-              {/* left spacer */}
-              <div className="flex-1" />
-              {/* centered title */}
-              <DialogTitle className="truncate text-center flex-shrink-0">
-                Add from library
-              </DialogTitle>
-              {/* right action */}
-              <div className="flex-1 flex justify-end">
-                <button
-                  type="button"
-                  aria-label="Open search"
-                  onClick={() => setIsSearchActive(true)}
-                  className="p-2 rounded hover:bg-muted"
-                >
-                  <Search className="w-6 h-6" />
-                </button>
+          <DialogHeader className="!flex-row items-center justify-between !gap-0 !text-center sm:!text-center">
+            {!isSearchActive ? (
+              <>
+                {/* left spacer */}
+                <div className="flex-1" />
+                {/* centered title */}
+                <DialogTitle className="truncate text-center flex-shrink-0">
+                  Add from library
+                </DialogTitle>
+                {/* right action */}
+                <div className="flex-1 flex justify-end">
+                  <button
+                    type="button"
+                    aria-label="Open search"
+                    onClick={() => setIsSearchActive(true)}
+                    className="p-2 rounded hover:bg-muted"
+                  >
+                    <Search className="w-6 h-6" />
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="flex-1">
+                <SearchInput
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  onCancel={() => {
+                    setSearchQuery("");
+                    setIsSearchActive(false);
+                  }}
+                />
               </div>
-            </>
-          ) : (
-            <div className="flex-1">
-              <SearchInput
-                value={searchQuery}
-                onChange={setSearchQuery}
-                onCancel={() => {
-                  setSearchQuery("");
-                  setIsSearchActive(false);
-                }}
-              />
-            </div>
-          )}
-        </DialogHeader>
+            )}
+          </DialogHeader>
 
-        {/* Document list */}
-        <div className="flex-1 overflow-y-auto flex flex-col gap-2">
-          {filteredDocuments.length > 0 ? (
-            filteredDocuments.map((doc) => (
-              <DocCard
-                key={doc.id}
-                title={doc.title}
-                preview={getPreview(doc.content)}
-                showPlusIcon
-                onPlusClick={() => handleInsert(doc)}
-              />
-            ))
-          ) : (
-            <div className="flex-1 flex items-center justify-center text-muted-foreground">
-              No documents found.
-            </div>
-          )}
-        </div>
+          {/* Document list */}
+          <div className="flex-1 overflow-y-auto flex flex-col gap-2">
+            {filteredDocuments.length > 0 ? (
+              filteredDocuments.map((doc) => (
+                <DocCard
+                  key={doc.id}
+                  title={doc.title}
+                  preview={getPreview(doc.content)}
+                  showPlusIcon
+                  onPlusClick={() => handleInsert(doc)}
+                />
+              ))
+            ) : (
+              <div className="flex-1 flex items-center justify-center text-muted-foreground">
+                No documents found.
+              </div>
+            )}
+          </div>
+        </motion.div>
       </DialogContent>
     </Dialog>
   );
