@@ -1,53 +1,55 @@
 // src/components/editor/doc-editor.tsx
-
 "use client";
 
 import type { Editor } from "@tiptap/react";
-import { useCallback, useEffect, useState } from "react";
-import { useParams } from "next/navigation"; // — Link Management —
+import { useEffect, useCallback, useState } from "react";
+import { useParams } from "next/navigation";
 import { KeyboardToolbar } from "@/components/editor/keyboard-toolbar";
 import { PageContainer } from "@/components/layouts/page-container";
 import { RichTextEditor } from "./rich-text-editor";
 import { useHeader } from "@/hooks/useHeader";
-import { markdownToHtml } from "@/lib/utils"; // Markdown → HTML
-import { upsertLink } from "@/lib/linking"; // — Link Management —
+import { markdownToHtml } from "@/lib/utils";
 
-/** Props for the DocEditor component */
-type DocEditorProps = {
-  initialTitle?: string;
-  initialContent?: string; // stored as Markdown
+/** Props for DocEditor */
+export type DocEditorProps = {
+  initialTitle?: string; // Markdown’s first heading
+  initialContent?: string; // Markdown body
   onSave: (title: string, content: string) => Promise<void>;
   saving?: boolean;
 };
 
 /**
  * DocEditor
- * — Renders a TipTap-based editor with header save integration
- * — Converts between Markdown and HTML for storage
- * — **NEW:** Syncs any inserted/edited links to the backend
+ *
+ * Renders a TipTap-based editor with:
+ *  • Markdown ↔ HTML conversion
+ *  • “Save” integration via header context
+ *  • Link-insertion hook (for Library Drawer)
  */
 export function DocEditor({
   initialTitle = "Untitled Asana",
   initialContent = "",
   onSave,
 }: DocEditorProps) {
-  // — TipTap expects HTML; this is the value we feed it
+  // ──────────────────────────────────────────────────────────────────────
+  // State & Context
+  // ──────────────────────────────────────────────────────────────────────
   const [documentContent, setDocumentContent] = useState<string>("");
-
-  // — Header context for save button and title
-  const { setTitle: setHeaderTitle, setOnSave } = useHeader();
-
-  // — Holds the TipTap editor instance once ready
+  const { setTitle: setHeaderTitle, setOnSave, setOnInsertLink } = useHeader();
   const [editorInstance, setEditorInstance] = useState<Editor | null>(null);
 
-  // — Link Management: get current document’s ID from the URL
+  // (sourceId isn’t used in Approach 1; remove import of upsertLink/collectLinks)
   const params = useParams();
   const sourceId = params.id as string | undefined;
 
-  // ─── Initialize editor with HTML converted from Markdown ─────────────────
+  // ──────────────────────────────────────────────────────────────────────
+  // 1. Initialize editor with HTML converted from Markdown
+  // ──────────────────────────────────────────────────────────────────────
   useEffect(() => {
     async function initContent() {
+      // Convert Markdown → HTML
       const bodyHtml = await markdownToHtml(initialContent);
+      // Prepend an <h1> for the title
       const fullHtml = `<h1>${initialTitle}</h1>${bodyHtml}`;
       setDocumentContent(fullHtml);
       setHeaderTitle(initialTitle);
@@ -55,141 +57,97 @@ export function DocEditor({
     initContent();
   }, [initialContent, initialTitle, setHeaderTitle]);
 
-  /**
-   * extractTitleAndBody
-   * — Pulls out the first heading (or paragraph) as title
-   * — Returns { title, body } where body is innerHTML without the title element
-   */
-  function extractTitleAndBody(html: string) {
+  // ──────────────────────────────────────────────────────────────────────
+  // 2. Extract title & body from the editor’s HTML
+  // ──────────────────────────────────────────────────────────────────────
+  const extractTitleAndBody = useCallback((html: string) => {
     const doc = new DOMParser().parseFromString(html, "text/html");
+    // Find first heading or paragraph
     const heading = doc.querySelector("h1, h2, h3, h4, h5, h6");
-
     let title = "Untitled Asana";
+
     if (heading) {
-      title = (heading.textContent || "").trim();
+      title = heading.textContent?.trim() || title;
       heading.remove();
     } else {
-      const firstPara = doc.querySelector("p");
-      if (firstPara) {
-        title = (firstPara.textContent || "").trim();
-        firstPara.remove();
+      const p = doc.querySelector("p");
+      if (p) {
+        title = p.textContent?.trim() || title;
+        p.remove();
       }
     }
 
     return {
-      title: title || "Untitled Asana",
+      title,
       body: doc.body.innerHTML.trim(),
     };
-  }
+  }, []);
 
-  /**
-   * handleSubmit
-   * — Converts the current HTML back to Markdown and calls onSave
-   * — Set as the header’s save handler via setOnSave
-   */
+  // ──────────────────────────────────────────────────────────────────────
+  // 3. Save handler: Markdown conversion + onSave callback
+  // ──────────────────────────────────────────────────────────────────────
   const handleSubmit = useCallback(async () => {
     const { title, body: htmlBody } = extractTitleAndBody(documentContent);
 
+    // Dynamically load Turndown (so it’s only run in-browser)
     const TurndownService = (await import("turndown")).default;
-    const turndownService = new TurndownService({ headingStyle: "atx" });
-    turndownService.addRule("heading2", {
+    const turndown = new TurndownService({ headingStyle: "atx" });
+
+    // Preserve H2/H3 styling
+    turndown.addRule("heading2", {
       filter: (node) => node.nodeName === "H2",
       replacement: (content) => `\n\n## ${content}\n\n`,
     });
-    turndownService.addRule("heading3", {
+    turndown.addRule("heading3", {
       filter: (node) => node.nodeName === "H3",
       replacement: (content) => `\n\n### ${content}\n\n`,
     });
 
-    const markdown = turndownService.turndown(htmlBody);
+    const markdown = turndown.turndown(htmlBody);
     await onSave(title, markdown);
-  }, [documentContent, onSave]);
+  }, [documentContent, extractTitleAndBody, onSave]);
 
-  // Register the save handler with the header
+  // Register “Save” in header (runs only once per handleSubmit change)
   useEffect(() => {
     setOnSave(handleSubmit);
   }, [handleSubmit, setOnSave]);
 
-  // ─── Link Management: watch for link insertions/updates and persist them ───
-  useEffect(() => {
-    if (!editorInstance || !sourceId) return;
+  // ──────────────────────────────────────────────────────────────────────
+  // 4. Link-Insertion Handler: register once when editor is ready
+  // ──────────────────────────────────────────────────────────────────────
+  const handleReady = useCallback(
+    (editor: Editor) => {
+      setEditorInstance(editor);
+      // Tell the header context how to insert a link
+      setOnInsertLink((doc) => {
+        editor
+          .chain()
+          .focus()
+          .insertContent(`<a href="/library/${doc.id}">${doc.title}</a>`)
+          .run();
+      });
+    },
+    [setOnInsertLink]
+  );
 
-    const handleLinkUpdate = async () => {
-      // Get the full editor document as JSON
-      const json = editorInstance.getJSON();
-      // Extract all link nodes with their href and label text
-      const links = collectLinks(json);
-      // Upsert each link in order
-      for (let i = 0; i < links.length; i++) {
-        const { href, text } = links[i];
-        const targetId = href.split("/").pop()!;
-        await upsertLink({
-          source_id: sourceId,
-          target_id: targetId,
-          label: text,
-          position: i,
-        });
-      }
-    };
-
-    // TipTap fires 'update' on every doc change
-    editorInstance.on("update", handleLinkUpdate);
-    return () => {
-      editorInstance.off("update", handleLinkUpdate);
-    };
-  }, [editorInstance, sourceId]);
-
+  // ──────────────────────────────────────────────────────────────────────
+  // Render
+  // ──────────────────────────────────────────────────────────────────────
   return (
     <PageContainer className="py-6 px-4">
       <RichTextEditor
         initialContent={documentContent}
         editable
-        onChange={(updatedContent, extractedTitle) => {
-          setDocumentContent(updatedContent);
+        onReady={handleReady} // register insert-link here
+        onChange={(html, extractedTitle) => {
+          // live update title
+          setDocumentContent(html);
           setHeaderTitle(extractedTitle ?? "Untitled Asana");
         }}
-        onReady={(editor) => setEditorInstance(editor)}
       />
+
+      {/* KeyboardToolbar remains available for text formatting */}
       <KeyboardToolbar editor={editorInstance} />
     </PageContainer>
   );
-}
-
-// Define a type for the TipTap node
-interface TipTapNode {
-  type?: string;
-  attrs?: {
-    href?: string;
-  };
-  content?: TipTapNode[];
-}
-
-/**
- * collectLinks
- * — Traverses a TipTap JSON document to find all 'link' nodes
- * — Returns an array of { href, text } for each link found
- */
-function collectLinks(doc: TipTapNode): { href: string; text: string }[] {
-  const links: { href: string; text: string }[] = [];
-
-  function traverse(node: TipTapNode) {
-    if (node.type === "link" && node.attrs?.href) {
-      const text =
-        node.content
-          ?.map((c) => {
-            if (typeof c === "string") {
-              return c;
-            }
-            return "";
-          })
-          .join("") || "";
-      links.push({ href: node.attrs.href, text });
-    }
-
-    // Recursively traverse child nodes
-    node.content?.forEach(traverse);
-  }
-
-  traverse(doc);
-  return links;
 }

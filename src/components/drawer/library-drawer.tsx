@@ -1,3 +1,5 @@
+// src/components/drawer/library-drawer.tsx
+// src/components/drawer/library-drawer.tsx
 "use client";
 
 import {
@@ -17,76 +19,92 @@ import { DocCard } from "@/components/ui/doc-card";
 import { getPreview } from "@/lib/utils";
 import { fetchLinksForDocument, upsertLink } from "@/lib/linking";
 
-// Type for documents fetched from the library
+// Type for each document row
 interface Document {
   id: string;
   title: string;
   content: string;
 }
 
-// LibraryDrawer: displays a swipe-in drawer with a searchable list of documents to link
+/**
+ * LibraryDrawer
+ *
+ * Shows a searchable list of asana docs.
+ * – If there's no current document ID (i.e. on "create" page), we render a notice.
+ * – Otherwise, clicking the "+" on a DocCard upserts the link and invokes onInsertLink.
+ */
 export function LibraryDrawer() {
-  const { isLibraryDrawerOpen, setIsLibraryDrawerOpen } = useHeader();
+  const { isLibraryDrawerOpen, setIsLibraryDrawerOpen, onInsertLink } =
+    useHeader();
+
+  // params.id is undefined on /library/create
   const params = useParams();
-  const sourceId = params.id as string; // Current document being edited
+  const sourceId = params.id as string | undefined;
 
   const [documents, setDocuments] = useState<Document[]>([]);
   const [links, setLinks] = useState<{ target_id: string }[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
 
-  // Fetch all asana documents when drawer opens
+  // Fetch all asanas when drawer opens
   useEffect(() => {
-    async function fetchDocuments() {
-      const { data, error } = await supabase
-        .from("documents")
-        .select("id, title, content")
-        .eq("doc_type", "asana")
-        .order("title", { ascending: true });
-      if (data) setDocuments(data as Document[]);
-      else console.error(error);
-    }
-    if (isLibraryDrawerOpen) fetchDocuments();
+    if (!isLibraryDrawerOpen) return;
+    supabase
+      .from("documents")
+      .select("id, title, content")
+      .eq("doc_type", "asana")
+      .order("title", { ascending: true })
+      .then(({ data, error }) => {
+        if (error) console.error(error);
+        else setDocuments(data as Document[]);
+      });
   }, [isLibraryDrawerOpen]);
 
-  // Load existing links when drawer opens or sourceId changes
+  // Load existing links if we have a sourceId
   useEffect(() => {
-    async function loadLinks() {
-      try {
-        const data = await fetchLinksForDocument(sourceId);
-        setLinks(data ? data.map((l) => ({ target_id: l.target_id })) : []);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-    if (isLibraryDrawerOpen && sourceId) loadLinks();
+    if (!isLibraryDrawerOpen || !sourceId) return;
+    fetchLinksForDocument(sourceId)
+      .then((data) =>
+        setLinks(data?.map((l) => ({ target_id: l.target_id })) || [])
+      )
+      .catch(console.error);
   }, [isLibraryDrawerOpen, sourceId]);
 
-  // Handler: insert or update a link for the current document
+  // Insert handler: upsert in DB, then call editor callback
   async function handleInsert(doc: Document) {
+    if (!sourceId) {
+      // No-op if we're on "create" page
+      console.warn("Cannot link: document not saved yet.");
+      return;
+    }
     try {
-      const nextPosition = links.length;
+      const position = links.length;
       await upsertLink({
         source_id: sourceId,
         target_id: doc.id,
         label: doc.title,
-        position: nextPosition,
+        position,
       });
       setLinks((prev) => [...prev, { target_id: doc.id }]);
-    } catch (error) {
-      console.error("Failed to insert link", error);
+      // Tell the editor to insert the link HTML
+      onInsertLink({ id: doc.id, title: doc.title });
+    } catch (err) {
+      console.error("Failed to insert link", {
+        error: (err as any)?.message ?? err,
+        details: (err as any)?.details,
+      });
     }
   }
 
-  const filteredDocuments = documents.filter((doc) =>
-    doc.title.toLowerCase().includes(searchQuery.toLowerCase())
+  const filtered = documents.filter((d) =>
+    d.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <Dialog open={isLibraryDrawerOpen} onOpenChange={setIsLibraryDrawerOpen}>
       <DialogContent asChild>
         <motion.div
-          className="h-full w-full max-w-screen-sm flex flex-col p-4"
+          className="h-full w-full max-w-screen-sm flex flex-col p-4 bg-background"
           drag="y"
           dragDirectionLock
           dragElastic={0.2}
@@ -96,48 +114,38 @@ export function LibraryDrawer() {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           style={{ touchAction: "none" }}
         >
-          {/* Drag handle */}
           <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-muted" />
 
-          <DialogHeader className="!flex-row items-center justify-between !gap-0 !text-center sm:!text-center">
-            {!isSearchActive ? (
+          <DialogHeader>
+            {isSearchActive ? (
+              <SearchInput
+                value={searchQuery}
+                onChange={setSearchQuery}
+                onCancel={() => {
+                  setSearchQuery("");
+                  setIsSearchActive(false);
+                }}
+              />
+            ) : (
               <>
-                {/* left spacer */}
                 <div className="flex-1" />
-                {/* centered title */}
-                <DialogTitle className="truncate text-center flex-shrink-0">
-                  Add from library
-                </DialogTitle>
-                {/* right action */}
+                <DialogTitle>Add from library</DialogTitle>
                 <div className="flex-1 flex justify-end">
-                  <button
-                    type="button"
-                    aria-label="Open search"
-                    onClick={() => setIsSearchActive(true)}
-                    className="p-2 rounded hover:bg-muted"
-                  >
-                    <Search className="w-6 h-6" />
+                  <button onClick={() => setIsSearchActive(true)}>
+                    <Search />
                   </button>
                 </div>
               </>
-            ) : (
-              <div className="flex-1">
-                <SearchInput
-                  value={searchQuery}
-                  onChange={setSearchQuery}
-                  onCancel={() => {
-                    setSearchQuery("");
-                    setIsSearchActive(false);
-                  }}
-                />
-              </div>
             )}
           </DialogHeader>
 
-          {/* Document list */}
-          <div className="flex-1 overflow-y-auto flex flex-col gap-2">
-            {filteredDocuments.length > 0 ? (
-              filteredDocuments.map((doc) => (
+          <div className="flex-1 overflow-y-auto space-y-2">
+            {!sourceId ? (
+              <div className="p-4 text-center text-sm text-muted-foreground">
+                Save your document first to insert links.
+              </div>
+            ) : (
+              filtered.map((doc) => (
                 <DocCard
                   key={doc.id}
                   title={doc.title}
@@ -146,10 +154,6 @@ export function LibraryDrawer() {
                   onPlusClick={() => handleInsert(doc)}
                 />
               ))
-            ) : (
-              <div className="flex-1 flex items-center justify-center text-muted-foreground">
-                No documents found.
-              </div>
             )}
           </div>
         </motion.div>

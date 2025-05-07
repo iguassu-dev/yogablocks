@@ -8,13 +8,14 @@ export type DocCardProps = {
   title: string;
   preview: string; // markdown snippet
   showPlusIcon?: boolean;
-  onPlusClick?: () => void; // Add onPlusClick as an optional property
+  onPlusClick?: () => void;
 };
 
 export function DocCard({
   title,
   preview,
   showPlusIcon = false,
+  onPlusClick,
 }: DocCardProps) {
   return (
     <div className="w-full bg-card text-card-foreground p-4 flex items-start gap-4">
@@ -25,7 +26,7 @@ export function DocCard({
 
       {/* Title, Preview, and optional Plus Button */}
       <div className="flex-1">
-        {/* — Document title */}
+        {/* Document title */}
         <h4 className="m-0 text-lg font-semibold text-primary">{title}</h4>
         {/* Plain-text preview (markdown stripped) clamped to 2 lines */}
         <p className="mt-1 text-sm text-muted-foreground overflow-hidden line-clamp-2">
@@ -35,7 +36,12 @@ export function DocCard({
 
       {/* Right Plus Icon (visible only if showPlusIcon = true) */}
       {showPlusIcon && (
-        <Button size="icon" variant="ghost">
+        <Button
+          size="icon"
+          variant="ghost"
+          onClick={onPlusClick}
+          aria-label={`Insert link to ${title}`}
+        >
           <CirclePlus className="w-5 h-5" />
         </Button>
       )}

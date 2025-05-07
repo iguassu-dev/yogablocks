@@ -26,9 +26,8 @@ export async function fetchLinksForDocument(sourceId: string) {
 
 export async function upsertLink(link: Partial<DocumentLink>) {
   const { data, error } = await supabase
-    .from("document_links") // again, no generics
+    .from("document_links")
     .upsert(link, { onConflict: "id" });
-
   if (error) throw error;
   return data as DocumentLink[] | null;
 }
