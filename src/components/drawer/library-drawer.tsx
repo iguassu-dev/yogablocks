@@ -116,7 +116,7 @@ export function LibraryDrawer() {
         >
           <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-muted" />
 
-          <DialogHeader>
+          <DialogHeader className="flex items-center justify-between gap-4">
             {isSearchActive ? (
               <SearchInput
                 value={searchQuery}
@@ -125,23 +125,27 @@ export function LibraryDrawer() {
                   setSearchQuery("");
                   setIsSearchActive(false);
                 }}
+                className="mt-1"
               />
             ) : (
-              <>
-                <div className="flex-1" />
-                <DialogTitle>Add from library</DialogTitle>
-                <div className="flex-1 flex justify-end">
-                  <button onClick={() => setIsSearchActive(true)}>
-                    <Search />
-                  </button>
-                </div>
-              </>
+              <div className="flex items-center justify-between px-1 mb-2">
+                <DialogTitle className="text-base font-medium text-foreground">
+                  Add from library
+                </DialogTitle>
+                <button
+                  onClick={() => setIsSearchActive(true)}
+                  className="text-muted-foreground hover:text-foreground"
+                  aria-label="Search Library"
+                >
+                  <Search className="w-5 h-5" />
+                </button>
+              </div>
             )}
           </DialogHeader>
 
-          <div className="flex-1 overflow-y-auto space-y-2">
+          <div className="flex-1 overflow-y-auto px-4 py-2 space-y-3">
             {!sourceId ? (
-              <div className="p-4 text-center text-sm text-muted-foreground">
+              <div className="text-center text-sm text-muted-foreground">
                 Save your document first to insert links.
               </div>
             ) : (

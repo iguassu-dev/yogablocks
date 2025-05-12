@@ -1,9 +1,9 @@
+// src/components/ui/doc-card.tsx
 "use client";
 
 import { Triangle, CirclePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { stripMarkdown } from "@/lib/utils";
-import { TypographyHeading4 } from "./typography";
 
 export type DocCardProps = {
   title: string;
@@ -25,17 +25,15 @@ export function DocCard({
         <Triangle className="w-5 h-5 text-foreground" />
       </div>
 
-      {/* Title, Preview, and optional Plus Button */}
+      {/* Title and preview */}
       <div className="flex-1">
-        {/* Document title */}
-        <TypographyHeading4>{title}</TypographyHeading4>
-        {/* Plain-text preview (markdown stripped) clamped to 2 lines */}
+        <h3 className="text-base font-medium text-foreground">{title}</h3>
         <p className="mt-1 text-sm text-muted-foreground overflow-hidden line-clamp-2">
           {stripMarkdown(preview)}
         </p>
       </div>
 
-      {/* Right Plus Icon (visible only if showPlusIcon = true) */}
+      {/* Optional plus button */}
       {showPlusIcon && (
         <Button
           size="icon"
