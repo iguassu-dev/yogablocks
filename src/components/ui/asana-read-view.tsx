@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link"; // — Link Parsing & Rendering —
 import { parseAsanaContent } from "@/lib/parseAsanaContent"; // parses structured fields
 import { markdownToHtml } from "@/lib/utils"; // fallback markdown renderer
-
+import { TypographyHeading3, TypographyLink } from "@/components/ui/typography";
 import type { LibraryDoc } from "@/hooks/useLibrary"; // our array of { id, title }
 
 /**
@@ -49,19 +49,22 @@ export function AsanaReadView({
     value?: string | string[]
   ): React.ReactNode {
     if (!value || (Array.isArray(value) && value.length === 0)) return null;
+
     return (
-      <>
-        <h2>{label}</h2>
-        {typeof value === "string" ? (
-          <p>{value}</p>
-        ) : (
-          <ul>
-            {value.map((item, i) => (
-              <li key={i}>{item}</li>
-            ))}
-          </ul>
-        )}
-      </>
+      <section className="mt-6">
+        <TypographyHeading3>{label}</TypographyHeading3>
+        <div className="prose prose-sm prose-primary mt-2">
+          {typeof value === "string" ? (
+            <p>{value}</p>
+          ) : (
+            <ul>
+              {value.map((item, i) => (
+                <li key={i}>{item}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </section>
     );
   }
 
@@ -79,26 +82,27 @@ export function AsanaReadView({
       {/* ── New: Preparatory Poses as links ── */}
       {parsed.preparatory_poses && parsed.preparatory_poses.length > 0 && (
         <>
-          <h2>Preparatory Poses</h2>
-          <ul className="!pl-0 list-none !ml-0 p-0 m-0">
-            {parsed.preparatory_poses.map((pose, i) => {
-              const match = docs.find((d) => d.title === pose);
-              return (
-                <li key={i} className="mb-1 pl-0">
-                  {match ? (
-                    <Link
-                      href={`/library/${match.id}`}
-                      className="inline underline text-purple-700 font-normal"
-                    >
-                      {pose}
-                    </Link>
-                  ) : (
-                    <span className="font-normal">{pose}</span>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
+          <section className="mt-6">
+            <TypographyHeading3>Preparatory Poses</TypographyHeading3>
+            <div className="prose prose-sm prose-primary mt-2">
+              <ul className="!pl-0 list-none !ml-0 p-0 m-0">
+                {parsed.preparatory_poses.map((pose, i) => {
+                  const match = docs.find((d) => d.title === pose);
+                  return (
+                    <li key={i} className="mb-1 pl-0">
+                      {match ? (
+                        <TypographyLink href={`/library/${match.id}`}>
+                          {pose}
+                        </TypographyLink>
+                      ) : (
+                        <span className="font-normal">{pose}</span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </section>
         </>
       )}
 
