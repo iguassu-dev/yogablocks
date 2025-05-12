@@ -1,4 +1,5 @@
 // src/hooks/useHeader.tsx
+// global state for title, mode, save/link callbacks
 "use client";
 
 import {

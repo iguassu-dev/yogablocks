@@ -3,6 +3,7 @@
 import { Triangle, CirclePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { stripMarkdown } from "@/lib/utils";
+import { TypographyHeading4 } from "./typography";
 
 export type DocCardProps = {
   title: string;
@@ -27,7 +28,7 @@ export function DocCard({
       {/* Title, Preview, and optional Plus Button */}
       <div className="flex-1">
         {/* Document title */}
-        <h4 className="m-0 text-lg font-semibold text-primary">{title}</h4>
+        <TypographyHeading4>{title}</TypographyHeading4>
         {/* Plain-text preview (markdown stripped) clamped to 2 lines */}
         <p className="mt-1 text-sm text-muted-foreground overflow-hidden line-clamp-2">
           {stripMarkdown(preview)}

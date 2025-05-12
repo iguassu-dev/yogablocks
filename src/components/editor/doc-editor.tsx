@@ -1,4 +1,5 @@
 // src/components/editor/doc-editor.tsx
+// title/content sync, link injection, save logic
 "use client";
 
 import type { Editor } from "@tiptap/react";

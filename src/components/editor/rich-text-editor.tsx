@@ -1,4 +1,6 @@
 // src/components/editor/rich-text-editor.tsx
+// TipTap setup, H1 enforcement, title protection
+
 "use client";
 
 import { useEditor, EditorContent } from "@tiptap/react";
