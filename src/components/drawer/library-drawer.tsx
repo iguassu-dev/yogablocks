@@ -2,12 +2,13 @@
 "use client";
 
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import { SearchInput } from "@/components/ui/search-input";
+import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { useHeader } from "@/hooks/useHeader";
 import { useParams } from "next/navigation";
@@ -42,8 +43,8 @@ export function LibraryDrawer() {
 
   const [documents, setDocuments] = useState<Document[]>([]);
   const [links, setLinks] = useState<{ target_id: string }[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isSearchActive, setIsSearchActive] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   // Fetch all asanas when drawer opens
   useEffect(() => {
@@ -97,14 +98,13 @@ export function LibraryDrawer() {
   }
 
   const filtered = documents.filter((d) =>
-    d.title.toLowerCase().includes(searchQuery.toLowerCase())
+    d.title.toLowerCase().includes(searchValue.toLowerCase())
   );
 
   return (
-    <Dialog open={isLibraryDrawerOpen} onOpenChange={setIsLibraryDrawerOpen}>
-      <DialogContent asChild>
+    <Drawer open={isLibraryDrawerOpen} onOpenChange={setIsLibraryDrawerOpen}>
+      <DrawerContent className="max-w-screen-sm mx-auto bg-background p-0">
         <motion.div
-          className="h-full w-full max-w-screen-sm flex flex-col p-4 bg-background"
           drag="y"
           dragDirectionLock
           dragElastic={0.2}
@@ -113,39 +113,44 @@ export function LibraryDrawer() {
           }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           style={{ touchAction: "none" }}
+          className="flex h-full flex-col"
         >
-          <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-muted" />
-
-          <DialogHeader className="flex items-center justify-between gap-4">
-            {isSearchActive ? (
+          <DrawerHeader className="relative flex items-center justify-center h-12 px-4 pb-2">
+            {isSearchOpen ? (
               <SearchInput
-                value={searchQuery}
-                onChange={setSearchQuery}
+                value={searchValue}
+                onChange={setSearchValue}
                 onCancel={() => {
-                  setSearchQuery("");
-                  setIsSearchActive(false);
+                  setSearchValue("");
+                  setIsSearchOpen(false);
                 }}
-                className="mt-1"
               />
             ) : (
-              <div className="flex items-center justify-between px-1 mb-2">
-                <DialogTitle className="text-base font-medium text-foreground">
+              <>
+                {/* Centered title */}
+                <DrawerTitle className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-medium text-foreground">
                   Add from library
-                </DialogTitle>
-                <button
-                  onClick={() => setIsSearchActive(true)}
-                  className="text-muted-foreground hover:text-foreground"
-                  aria-label="Search Library"
-                >
-                  <Search className="w-5 h-5" />
-                </button>
-              </div>
-            )}
-          </DialogHeader>
+                </DrawerTitle>
 
-          <div className="flex-1 overflow-y-auto px-4 py-2 space-y-3">
+                {/* Right-aligned search icon */}
+                <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="md:hidden"
+                    aria-label="Open search"
+                    onClick={() => setIsSearchOpen(true)}
+                  >
+                    <Search className="h-6 w-6" />
+                  </Button>
+                </div>
+              </>
+            )}
+          </DrawerHeader>
+
+          <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-3">
             {!sourceId ? (
-              <div className="text-center text-sm text-muted-foreground">
+              <div className="text-center text-sm text-muted-foreground mt-6">
                 Save your document first to insert links.
               </div>
             ) : (
@@ -161,7 +166,7 @@ export function LibraryDrawer() {
             )}
           </div>
         </motion.div>
-      </DialogContent>
-    </Dialog>
+      </DrawerContent>
+    </Drawer>
   );
 }
