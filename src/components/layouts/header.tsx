@@ -28,6 +28,7 @@ import { PageContainer } from "@/components/layouts/page-container";
 import { LibraryDrawer } from "@/components/drawer/library-drawer";
 import { useHeader } from "@/hooks/useHeader";
 import { deleteDocById } from "@/lib/deleteDoc";
+import { duplicateDoc } from "@/lib/duplicateDoc";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -223,6 +224,9 @@ export default function Header() {
 }
 // More options menu
 function MoreOptionsMenu({ onDelete }: { onDelete: () => void }) {
+  const router = useRouter();
+  const { id } = useParams(); // get current doc ID
+  const documentId = id as string;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -231,9 +235,18 @@ function MoreOptionsMenu({ onDelete }: { onDelete: () => void }) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent side="bottom" align="end">
-        <DropdownMenuItem onClick={() => console.log("Duplicate")}>
+        {/* Duplicate */}
+        <DropdownMenuItem
+          onClick={async () => {
+            const newId = await duplicateDoc(documentId);
+            if (newId) {
+              router.push(`/library/edit/${newId}`);
+            }
+          }}
+        >
           <Copy className="mr-2 h-4 w-4" /> Duplicate
         </DropdownMenuItem>
+        {/* Delete */}
         <DropdownMenuItem
           className="text-destructive focus:text-destructive"
           onClick={onDelete}

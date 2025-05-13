@@ -1,4 +1,5 @@
 // src/lib/utils.ts
+// Markdown, string, styling helpers
 
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
