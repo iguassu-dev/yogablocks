@@ -4,7 +4,6 @@
 
 import * as React from "react";
 import { useEffect, useState } from "react";
-import Link from "next/link"; // — Link Parsing & Rendering —
 import { parseAsanaContent } from "@/lib/parseAsanaContent"; // parses structured fields
 import { markdownToHtml } from "@/lib/utils"; // fallback markdown renderer
 import { TypographyHeading3, TypographyLink } from "@/components/ui/typography";
