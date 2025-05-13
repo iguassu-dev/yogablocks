@@ -9,6 +9,9 @@ import { PageContainer } from "@/components/layouts/page-container";
 import { RichTextEditor } from "./rich-text-editor";
 import { useHeader } from "@/hooks/useHeader";
 import { markdownToHtml } from "@/lib/utils";
+import { collectLinks } from "@/lib/link-utils";
+import { fetchLinksForDocument, upsertLink, deleteLink } from "@/lib/linking";
+import { useParams } from "next/navigation";
 
 /** Props for DocEditor */
 export type DocEditorProps = {
@@ -37,6 +40,8 @@ export function DocEditor({
   const [documentContent, setDocumentContent] = useState<string>("");
   const { setTitle: setHeaderTitle, setOnSave, setOnInsertLink } = useHeader();
   const [editorInstance, setEditorInstance] = useState<Editor | null>(null);
+  const params = useParams();
+  const sourceId = params?.id as string | undefined;
 
   // ──────────────────────────────────────────────────────────────────────
   // 1. Initialize editor with HTML converted from Markdown
@@ -101,7 +106,30 @@ export function DocEditor({
 
     const markdown = turndown.turndown(htmlBody);
     await onSave(title, markdown);
-  }, [documentContent, extractTitleAndBody, onSave]);
+
+    // 🔗 Extract and persist document links
+    if (sourceId) {
+      const newLinks = collectLinks(markdown);
+
+      // Delete all old links for this doc
+      const existing = await fetchLinksForDocument(sourceId);
+      if (existing) {
+        for (const link of existing) {
+          await deleteLink(link.id);
+        }
+      }
+
+      // Upsert new links
+      for (const link of newLinks) {
+        await upsertLink({
+          source_id: sourceId,
+          target_id: link.target_id,
+          label: link.label,
+          position: link.position,
+        });
+      }
+    }
+  }, [documentContent, extractTitleAndBody, onSave, sourceId]);
 
   // Register “Save” in header (runs only once per handleSubmit change)
   useEffect(() => {

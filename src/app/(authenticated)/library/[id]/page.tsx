@@ -39,6 +39,9 @@ export default function DocumentDetailPage() {
       } else if (data) {
         setDocument(data as Document);
         setTitle(data.title);
+      } else {
+        // data === null but no thrown error: still a failure
+        setError("Document not found.");
       }
       setLoading(false);
     }
