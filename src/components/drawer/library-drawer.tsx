@@ -148,7 +148,7 @@ export function LibraryDrawer() {
             )}
           </DrawerHeader>
 
-          <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-3">
+          <div className="flex-1 overflow-y-auto px-4 pb-6 ">
             {!sourceId ? (
               <div className="text-center text-sm text-muted-foreground mt-6">
                 Save your document first to insert links.

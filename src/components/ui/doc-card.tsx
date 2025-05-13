@@ -19,7 +19,7 @@ export function DocCard({
   onPlusClick,
 }: DocCardProps) {
   return (
-    <div className="w-full bg-card text-card-foreground p-4 flex items-start gap-4">
+    <div className="w-full bg-card text-card-foreground py-4 flex items-start gap-4">
       {/* Left Icon */}
       <div className="w-10 h-10 flex items-center justify-center rounded-full bg-muted">
         <Triangle className="w-5 h-5 text-foreground" />
@@ -41,7 +41,7 @@ export function DocCard({
           onClick={onPlusClick}
           aria-label={`Insert link to ${title}`}
         >
-          <CirclePlus className="w-5 h-5" />
+          <CirclePlus className="w-6 h-6" />
         </Button>
       )}
     </div>
