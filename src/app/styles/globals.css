@@ -161,9 +161,11 @@
   }
 
   .prose ul {
-    @apply list-disc ml-6;
+    @apply list-disc ml-1;
   }
-
+  .prose ol {
+    @apply list-disc ml-1;
+  }
   .prose li {
     @apply mt-2 text-base font-normal text-primary;
   }

@@ -1,68 +1,87 @@
 /**
  * scripts/seedAsanas.ts
  *
- * Use this script to insert asanas from asanas.json
- * into the documents table.
+ * Converts structured asanas from JSON into markdown.
+ * Prep poses are stored as markdown links using UUIDs.
  *
- * Usage: npx ts-node scripts/seedAsanas.ts
+ * Usage: npx tsx scripts/seedAsanas.ts
  */
-import "dotenv/config";
-import { config } from "dotenv";
-config({ path: ".env.local" }); // This ensures variables from .env.local are loaded
+
+import * as dotenv from "dotenv";
+import path from "path";
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
+
 import { createClient } from "@supabase/supabase-js";
 import asanas from "../data/asanas.json";
 
+// Initialize Supabase
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-  process.env.SUPABASE_SERVICE_ROLE_KEY ?? ""
+  process.env.SUPABASE_URL || "",
+  process.env.SUPABASE_ANON_KEY || ""
 );
 
 const SYSTEM_USER_ID = "cdbdccbc-9125-4d58-bf12-58fbb889c8c6";
 
-async function seedAsanas() {
-  try {
-    for (const asana of asanas) {
-      // Compose a string or markdown version of the asana details
-      // that you’ll store in `content`.
-      const contentBlock = `
-**Sanskrit Name**: ${asana.sanskrit_name}
-**Category**: ${asana.category}
+// 1. Fetch all existing asanas to build a title → UUID map
+const { data: allDocs, error: fetchError } = await supabase
+  .from("documents")
+  .select("id, title")
+  .eq("doc_type", "asana");
 
-**Benefits**:
-- ${asana.benefits.join("\n- ")}
-
-**Contraindications**:
-- ${asana.contraindications.join("\n- ")}
-
-**Modifications**:
-- ${asana.modifications.join("\n- ")}
-
-**Preparatory Poses**:
-- ${asana.preparatory_poses.join("\n- ")}
-      `.trim();
-
-      // Insert into documents
-      const { error } = await supabase.from("documents").insert({
-        doc_type: "asana",
-        title: asana.english_name,
-        content: contentBlock,
-        created_by: SYSTEM_USER_ID,
-      });
-
-      if (error) {
-        console.error(`Error inserting ${asana.english_name}`, error);
-      } else {
-        console.log(`Inserted asana: ${asana.english_name}`);
-      }
-    }
-
-    console.log("Seeding complete!");
-  } catch (err) {
-    console.error("Seeding error:", err);
-  }
+if (fetchError || !allDocs) {
+  console.error("❌ Failed to fetch existing asanas:", fetchError);
+  process.exit(1);
 }
 
-seedAsanas().then(() => {
-  console.log("All done!");
-  process.exit(0);
-});
+const titleToIdMap: Record<string, string> = {};
+for (const doc of allDocs) {
+  titleToIdMap[doc.title.trim().toLowerCase()] = doc.id;
+}
+
+// 2. Utility to wrap markdown sections
+function section(label: string, values?: string[]): string | undefined {
+  if (!values?.length) return;
+  return [`## ${label}`, ...values.map((item) => `- ${item}`)].join("\n");
+}
+
+// 3. Seed each asana
+(async function seedAsanas() {
+  for (const asana of asanas) {
+    // Convert preparatory poses to markdown links (or fallback to plain text)
+    const linkedPrepPoses = (asana.preparatory_poses || []).map(
+      (title: string) => {
+        const normalized = title.trim().toLowerCase();
+        const id = titleToIdMap[normalized];
+        return id ? `[${title}](/library/${id})` : title;
+      }
+    );
+
+    // Compose full markdown body
+    const parts = [
+      `## Sanskrit Name\n${asana.sanskrit_name}`,
+      `## Category\n${asana.category}`,
+      section("Benefits", asana.benefits),
+      section("Contraindications", asana.contraindications),
+      section("Modifications", asana.modifications),
+      section("Preparatory Poses", linkedPrepPoses),
+    ];
+
+    const contentBlock = parts.filter(Boolean).join("\n\n");
+
+    // Insert document
+    const { error } = await supabase.from("documents").insert({
+      doc_type: "asana",
+      title: asana.english_name,
+      content: contentBlock,
+      created_by: SYSTEM_USER_ID,
+    });
+
+    if (error) {
+      console.error(`❌ Error inserting ${asana.english_name}:`, error);
+    } else {
+      console.log(`✅ Inserted: ${asana.english_name}`);
+    }
+  }
+
+  console.log("🎉 Seeding complete!");
+})();

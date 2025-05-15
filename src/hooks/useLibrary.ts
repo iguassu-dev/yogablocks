@@ -21,7 +21,7 @@ export function useLibrary(): LibraryDoc[] {
     async function fetchLibrary() {
       const { data, error } = await supabase
         .from("documents")
-        .select("id, title")
+        .select("id, title, created_by")
         .eq("doc_type", "asana");
 
       if (error) {

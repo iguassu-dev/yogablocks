@@ -9,9 +9,10 @@ interface TypographyProps {
   className?: string;
 }
 
-interface TypographyLinkProps extends TypographyProps {
-  href: string;
-}
+type TypographyLinkProps = React.PropsWithChildren<{
+  href: string; // ✅ explicitly required
+  className?: string;
+}>;
 
 export function TypographyHeading1({ children, className }: TypographyProps) {
   return (
@@ -86,10 +87,10 @@ export function TypographyLink({
   return (
     <Link
       href={href}
-      className={cn(
-        "text-purple-700 text-base font-normal underline underline-offset-4 hover:text-primary/80 transition-colors",
-        className
-      )}
+      className={
+        className ??
+        "text-purple-700 underline underline-offset-4 hover:text-primary/80 transition-colors"
+      }
     >
       {children}
     </Link>
