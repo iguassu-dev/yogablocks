@@ -23,7 +23,7 @@ export async function fetchLinksForDocument(sourceId: string) {
   // cast the result to your interface
   return data as DocumentLink[] | null;
 }
-
+// Upserts one or more document_links to Supabase
 export async function upsertLink(link: Partial<DocumentLink>) {
   const { data, error } = await supabase
     .from("document_links")
@@ -32,6 +32,7 @@ export async function upsertLink(link: Partial<DocumentLink>) {
   return data as DocumentLink[] | null;
 }
 
+// Deletes one or more document_links if they were removed from the editor content.
 export async function deleteLink(id: string) {
   const { error } = await supabase.from("document_links").delete().eq("id", id);
   if (error) throw error;
