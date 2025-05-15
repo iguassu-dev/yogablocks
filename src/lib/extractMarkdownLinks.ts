@@ -8,7 +8,7 @@
  *  - label: the visible link text
  *  - position: order in which the link appears
  */
-export function collectLinks(content: string): {
+export function extractMarkdownLinks(content: string): {
   target_id: string;
   label: string;
   position: number;

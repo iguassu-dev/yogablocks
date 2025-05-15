@@ -9,13 +9,14 @@ import { PageContainer } from "@/components/layouts/page-container";
 import { RichTextEditor } from "./rich-text-editor";
 import { useHeader } from "@/hooks/useHeader";
 import { markdownToHtml } from "@/lib/markdownHelpers";
-import { collectLinks } from "@/lib/extractMarkdownLinks";
 import {
   fetchLinksForDocument,
   upsertLink,
   deleteLink,
 } from "@/lib/linkPersistence";
 import { useParams } from "next/navigation";
+import { extractMarkdownLinks } from "@/lib/extractMarkdownLinks";
+import { isValidUUID } from "@/lib/markdownHelpers";
 
 /** Props for DocEditor */
 export type DocEditorProps = {
@@ -112,26 +113,41 @@ export function DocEditor({
     await onSave(title, markdown);
 
     // 🔗 Extract and persist document links
-    if (sourceId) {
-      const newLinks = collectLinks(markdown);
+    if (!sourceId) {
+      console.warn("Skipping link sync — no document ID found.");
+      return;
+    }
 
-      // Delete all old links for this doc
-      const existing = await fetchLinksForDocument(sourceId);
-      if (existing) {
-        for (const link of existing) {
-          await deleteLink(link.id);
-        }
+    try {
+      const newLinks = extractMarkdownLinks(markdown).filter((link) =>
+        isValidUUID(link.target_id)
+      );
+
+      const existing = (await fetchLinksForDocument(sourceId)) ?? [];
+
+      // Delete links no longer present
+      const deleted = existing.filter(
+        (old) => !newLinks.some((n) => n.target_id === old.target_id)
+      );
+      for (const d of deleted) {
+        await deleteLink(d.id);
       }
 
-      // Upsert new links
+      // Add or update current links
       for (const link of newLinks) {
+        const existingRow = existing.find(
+          (e) => e.target_id === link.target_id
+        );
         await upsertLink({
+          id: existingRow?.id,
           source_id: sourceId,
           target_id: link.target_id,
           label: link.label,
           position: link.position,
         });
       }
+    } catch (err) {
+      console.error("Link sync error:", err);
     }
   }, [documentContent, extractTitleAndBody, onSave, sourceId]);
 
