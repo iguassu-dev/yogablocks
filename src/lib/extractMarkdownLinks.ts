@@ -1,4 +1,4 @@
-// src/lib/link-utils.ts
+// src/lib/extractMarkdownLinks.ts
 /**
  * Extracts all links of the form [Label](/library/target_id)
  * from a markdown string.

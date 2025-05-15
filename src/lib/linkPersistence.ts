@@ -1,4 +1,4 @@
-// src/lib/linking.ts
+// src/lib/linkPersistence.ts
 import supabase from "./supabaseClient";
 
 // (1) Keep a single source of truth for DocumentLink

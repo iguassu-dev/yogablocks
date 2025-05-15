@@ -5,7 +5,7 @@
 import { Editor } from "@tiptap/react";
 import { Bold, Italic, List, ListOrdered, Heading1 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/markdownHelpers";
 
 type Props = {
   editor: Editor | null;

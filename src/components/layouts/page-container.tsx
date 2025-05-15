@@ -1,5 +1,5 @@
 // src/components/layouts/page-container.tsx
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/markdownHelpers";
 
 export function PageContainer({
   className,

@@ -11,7 +11,7 @@ import { useHeader } from "@/hooks/useHeader";
 import { PageContainer } from "@/components/layouts/page-container";
 import { useDebounce } from "use-debounce";
 import { DocCard } from "@/components/ui/doc-card";
-import { getPreview } from "@/lib/utils";
+import { getPreview } from "@/lib/markdownHelpers";
 import { FAB } from "@/components/ui/FAB";
 
 export default function LibraryPage() {

@@ -1,4 +1,4 @@
-// src/lib/utils.ts
+// src/lib/markdownHelpers.ts
 // Markdown, string, styling helpers
 
 import { clsx, type ClassValue } from "clsx";

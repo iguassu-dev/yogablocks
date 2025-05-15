@@ -8,9 +8,13 @@ import { KeyboardToolbar } from "@/components/editor/keyboard-toolbar";
 import { PageContainer } from "@/components/layouts/page-container";
 import { RichTextEditor } from "./rich-text-editor";
 import { useHeader } from "@/hooks/useHeader";
-import { markdownToHtml } from "@/lib/utils";
-import { collectLinks } from "@/lib/link-utils";
-import { fetchLinksForDocument, upsertLink, deleteLink } from "@/lib/linking";
+import { markdownToHtml } from "@/lib/markdownHelpers";
+import { collectLinks } from "@/lib/extractMarkdownLinks";
+import {
+  fetchLinksForDocument,
+  upsertLink,
+  deleteLink,
+} from "@/lib/linkPersistence";
 import { useParams } from "next/navigation";
 
 /** Props for DocEditor */

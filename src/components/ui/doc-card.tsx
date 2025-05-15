@@ -3,7 +3,7 @@
 
 import { Triangle, CirclePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { stripMarkdown } from "@/lib/utils";
+import { stripMarkdown } from "@/lib/markdownHelpers";
 
 export type DocCardProps = {
   title: string;

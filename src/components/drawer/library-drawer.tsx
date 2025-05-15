@@ -16,8 +16,8 @@ import supabase from "@/lib/supabaseClient";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { DocCard } from "@/components/ui/doc-card";
-import { getPreview } from "@/lib/utils";
-import { fetchLinksForDocument, upsertLink } from "@/lib/linking";
+import { getPreview } from "@/lib/markdownHelpers";
+import { fetchLinksForDocument, upsertLink } from "@/lib/linkPersistence";
 
 // Type for each document row
 interface Document {

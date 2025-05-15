@@ -5,7 +5,7 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { parseAsanaContent } from "@/lib/parseAsanaContent"; // parses structured fields
-import { markdownToHtml } from "@/lib/utils"; // fallback markdown renderer
+import { markdownToHtml } from "@/lib/markdownHelpers"; // fallback markdown renderer
 import { TypographyHeading3, TypographyLink } from "@/components/ui/typography";
 import { useLibraryMap } from "@/hooks/useLibraryMap"; // fetches all asanas
 import type { LibraryDoc } from "@/hooks/useLibrary"; // our array of { id, title }

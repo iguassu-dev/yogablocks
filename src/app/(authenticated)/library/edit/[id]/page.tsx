@@ -6,7 +6,11 @@ import { useRouter, useParams } from "next/navigation";
 import supabase from "@/lib/supabaseClient";
 import { DocEditor } from "@/components/editor/doc-editor";
 import { toast } from "sonner";
-import { fetchLinksForDocument, upsertLink, deleteLink } from "@/lib/linking";
+import {
+  fetchLinksForDocument,
+  upsertLink,
+  deleteLink,
+} from "@/lib/linkPersistence";
 
 /**
  * EditAsanaPage

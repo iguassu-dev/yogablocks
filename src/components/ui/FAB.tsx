@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/markdownHelpers";
 import { CirclePlus, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
