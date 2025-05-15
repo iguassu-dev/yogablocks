@@ -8,7 +8,7 @@ import { parseAsanaContent } from "@/lib/parseAsanaContent"; // parses structure
 import { markdownToHtml } from "@/lib/utils"; // fallback markdown renderer
 import { TypographyHeading3, TypographyLink } from "@/components/ui/typography";
 import { useLibraryMap } from "@/hooks/useLibraryMap"; // fetches all asanas
-
+import type { LibraryDoc } from "@/hooks/useLibrary"; // our array of { id, title }
 /**
  * Displays an asana’s structured metadata and fallback markdown,
  * and renders Preparatory Poses as clickable links when possible.
@@ -16,9 +16,11 @@ import { useLibraryMap } from "@/hooks/useLibraryMap"; // fetches all asanas
 export function AsanaReadView({
   title,
   content,
+  docs,
 }: {
   title: string;
   content: string;
+  docs: LibraryDoc[];
 }) {
   // ─────────────────────────────────────────────
   // 1. Parse out structured fields from content
