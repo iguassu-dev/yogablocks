@@ -1,7 +1,7 @@
 // scripts/seedAsanas.ts
 //
 // Seeds the Supabase `documents` table with official asanas,
-// injecting `[Title](/library/uuid)` markdown links for preparatory poses.
+// Ended up using normalizeLinkUUIDs.ts for a one-time fix to replace all [Title](/library/WRONG_UUID) links in asana content with correct UUIDs based on Supabase data.
 
 import * as dotenv from "dotenv";
 import path from "path";
