@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import supabase from "@/lib/supabaseClient";
 import { useHeader } from "@/hooks/useHeader";
-import { useLibrary, LibraryDoc } from "@/hooks/useLibrary";
 import { PageContainer } from "@/components/layouts/page-container";
 import { FAB } from "@/components/ui/FAB";
 import { AsanaReadView } from "@/components/ui/asana-read-view";
@@ -21,9 +20,6 @@ export default function DocumentDetailPage() {
   const [document, setDocument] = useState<Document | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // **Fetch all asanas for pose-link lookups**
-  const docs: LibraryDoc[] = useLibrary();
 
   useEffect(() => {
     async function fetchDocument() {
@@ -71,11 +67,7 @@ export default function DocumentDetailPage() {
     <main className="relative min-h-screen">
       <PageContainer className="pt-6 px-4 pb-24">
         {/* Pass docs into the read view for link resolution */}
-        <AsanaReadView
-          title={document.title}
-          content={document.content}
-          docs={docs}
-        />
+        <AsanaReadView title={document.title} content={document.content} />
 
         <div className="flex justify-end mt-4">
           <FAB variant="edit" href={`/library/edit/${document.id}`} />
