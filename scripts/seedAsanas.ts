@@ -1,7 +1,8 @@
 // scripts/seedAsanas.ts
-//
-// Seeds the Supabase `documents` table with official asanas,
+// Seeds the Supabase `documents` table with official asanas
+
 // Ended up using normalizeLinkUUIDs.ts for a one-time fix to replace all [Title](/library/WRONG_UUID) links in asana content with correct UUIDs based on Supabase data.
+// Seeded Supabase by importing /data/documents_rows.csv
 
 import * as dotenv from "dotenv";
 import path from "path";

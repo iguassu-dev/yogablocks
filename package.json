@@ -16,7 +16,7 @@
     "@radix-ui/react-slot": "^1.1.2",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/ssr": "^0.6.1",
-    "@supabase/supabase-js": "^2.49.4",
+    "@supabase/supabase-js": "^2.49.6",
     "@tailwindcss/line-clamp": "^0.4.4",
     "@tiptap/extension-link": "^2.11.7",
     "@tiptap/extension-placeholder": "^2.11.7",
