@@ -9,11 +9,7 @@ import { PageContainer } from "@/components/layouts/page-container";
 import { RichTextEditor } from "./rich-text-editor";
 import { useHeader } from "@/hooks/useHeader";
 import { markdownToHtml } from "@/lib/markdownHelpers";
-import {
-  fetchLinksForDocument,
-  upsertLink,
-  deleteLink,
-} from "@/lib/linkPersistence";
+import { fetchLinkForDoc, upsertLink, deleteLink } from "@/lib/linkPersistence";
 import { useParams } from "next/navigation";
 import { extractMarkdownLinks } from "@/lib/extractMarkdownLinks";
 import { isValidUUID } from "@/lib/markdownHelpers";
@@ -123,7 +119,7 @@ export function DocEditor({
         isValidUUID(link.target_id)
       );
 
-      const existing = (await fetchLinksForDocument(sourceId)) ?? [];
+      const existing = (await fetchLinkForDoc(sourceId)) ?? [];
 
       // Delete links no longer present
       const deleted = existing.filter(

@@ -12,19 +12,13 @@ import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { useHeader } from "@/hooks/useHeader";
 import { useParams } from "next/navigation";
-import supabase from "@/lib/supabaseClient";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { DocCard } from "@/components/ui/doc-card";
 import { getPreview } from "@/lib/markdownHelpers";
-import { fetchLinksForDocument, upsertLink } from "@/lib/linkPersistence";
-
-// Type for each document row
-interface Document {
-  id: string;
-  title: string;
-  content: string;
-}
+import { fetchLinkForDoc, upsertLink } from "@/lib/linkPersistence";
+import type { Doc } from "@/types";
+import { fetchDoc } from "@/lib/fetchDoc";
 
 /**
  * LibraryDrawer
@@ -41,7 +35,7 @@ export function LibraryDrawer() {
   const params = useParams();
   const sourceId = params.id as string | undefined;
 
-  const [documents, setDocuments] = useState<Document[]>([]);
+  const [documents, setDocuments] = useState<Doc[]>([]);
   const [links, setLinks] = useState<{ target_id: string }[]>([]);
   const [searchValue, setSearchValue] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -49,20 +43,15 @@ export function LibraryDrawer() {
   // Fetch all docs when drawer opens
   useEffect(() => {
     if (!isLibraryDrawerOpen) return;
-    supabase
-      .from("documents")
-      .select("id, title, content")
-      .order("title", { ascending: true })
-      .then(({ data, error }) => {
-        if (error) console.error(error);
-        else setDocuments(data as Document[]);
-      });
+    fetchDoc({ fields: "id, title, content" })
+      .then(setDocuments)
+      .catch(console.error);
   }, [isLibraryDrawerOpen]);
 
   // Load existing links if we have a sourceId
   useEffect(() => {
     if (!isLibraryDrawerOpen || !sourceId) return;
-    fetchLinksForDocument(sourceId)
+    fetchLinkForDoc(sourceId)
       .then((data) =>
         setLinks(data?.map((l) => ({ target_id: l.target_id })) || [])
       )
@@ -70,7 +59,7 @@ export function LibraryDrawer() {
   }, [isLibraryDrawerOpen, sourceId]);
 
   // Insert handler: upsert in DB, then call editor callback
-  async function handleInsert(doc: Document) {
+  async function handleInsert(doc: Doc) {
     if (!sourceId) {
       // No-op if we're on "create" page
       console.warn("Cannot link: document not saved yet.");

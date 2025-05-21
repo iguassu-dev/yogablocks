@@ -5,7 +5,6 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import supabase from "@/lib/supabaseClient";
 import useUser from "@/hooks/useUser";
 import { useHeader } from "@/hooks/useHeader";
 import { PageContainer } from "@/components/layouts/page-container";
@@ -13,6 +12,8 @@ import { useDebounce } from "use-debounce";
 import { DocCard } from "@/components/ui/doc-card";
 import { getPreview } from "@/lib/markdownHelpers";
 import { FAB } from "@/components/ui/FAB";
+import type { Doc } from "@/types";
+import { fetchDoc } from "@/lib/fetchDoc";
 
 export default function LibraryPage() {
   const { user, loading: userLoading } = useUser();
@@ -24,12 +25,6 @@ export default function LibraryPage() {
   const [docs, setDocs] = useState<Doc[]>([]);
   const [debouncedSearchValue] = useDebounce(searchValue, 300);
 
-  type Doc = {
-    id: string;
-    title: string;
-    content: string;
-  };
-
   useEffect(() => {
     if (!userLoading && !user) {
       router.push("/login");
@@ -37,27 +32,21 @@ export default function LibraryPage() {
   }, [user, userLoading, router]);
 
   useEffect(() => {
-    async function fetchData() {
-      let query = supabase.from("documents").select("*");
-
-      if (debouncedSearchValue) {
-        query = query.or(
-          `title.ilike.%${debouncedSearchValue}%,content.ilike.%${debouncedSearchValue}%`
-        );
+    async function loadDocs() {
+      try {
+        const data = await fetchDoc({
+          search: debouncedSearchValue,
+        });
+        setDocs(data);
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setLoading(false);
       }
-
-      const { data, error } = await query;
-
-      if (error) {
-        setError(error.message);
-      } else {
-        setDocs(data || []);
-      }
-      setLoading(false);
     }
 
     if (user) {
-      fetchData();
+      loadDocs();
     }
   }, [user, debouncedSearchValue]);
 

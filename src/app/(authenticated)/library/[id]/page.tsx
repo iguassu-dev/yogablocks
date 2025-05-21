@@ -8,17 +8,12 @@ import { useHeader } from "@/hooks/useHeader";
 import { PageContainer } from "@/components/layouts/page-container";
 import { FAB } from "@/components/ui/FAB";
 import { DocReadView } from "@/components/ui/doc-read-view";
-
-interface Document {
-  id: string;
-  title: string;
-  content: string;
-}
+import type { Doc } from "@/types";
 
 export default function DocumentDetailPage() {
   const { id } = useParams();
   const { setTitle } = useHeader();
-  const [document, setDocument] = useState<Document | null>(null);
+  const [doc, setDoc] = useState<Doc | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,7 +29,7 @@ export default function DocumentDetailPage() {
         console.error("Error fetching document:", error);
         setError(error.message);
       } else if (data) {
-        setDocument(data as Document);
+        setDoc(data as Doc);
         setTitle(data.title);
       } else {
         // data === null but no thrown error: still a failure
@@ -56,7 +51,7 @@ export default function DocumentDetailPage() {
   if (error) {
     return <p className="text-center mt-10 text-destructive">Error: {error}</p>;
   }
-  if (!document) {
+  if (!doc) {
     return (
       <p className="text-center mt-10 text-muted-foreground">
         Document not found.
@@ -68,10 +63,10 @@ export default function DocumentDetailPage() {
     <main className="relative min-h-screen">
       <PageContainer className="pt-6 px-4 pb-24">
         {/* Pass docs into the read view for link resolution */}
-        <DocReadView title={document.title} content={document.content} />
+        <DocReadView title={doc.title} content={doc.content} />
 
         <div className="flex justify-end mt-4">
-          <FAB variant="edit" href={`/library/edit/${document.id}`} />
+          <FAB variant="edit" href={`/library/edit/${doc.id}`} />
         </div>
       </PageContainer>
     </main>
