@@ -1,17 +1,17 @@
-// src/app/(authenticated)/library/edit/[id]/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import supabase from "@/lib/supabaseClient";
-import { DocEditor } from "@/components/editor/doc-editor";
 import { toast } from "sonner";
+import { DocEditor } from "@/components/editor/doc-editor";
+import { fetchDocById } from "@/lib/fetchDocById";
+import supabase from "@/lib/supabaseClient";
 
 /**
  * EditDocPage
  *
- * Fetches an existing document, displays it in the editor,
- * and delegates save logic (including linking) to DocEditor.
+ * Loads a document by ID, passes its data into the editor,
+ * and wires up the save functionality for updates.
  */
 export default function EditDocPage() {
   const router = useRouter();
@@ -24,28 +24,20 @@ export default function EditDocPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchDoc() {
-      const { data, error } = await supabase
-        .from("documents")
-        .select("title, content")
-        .eq("id", documentId)
-        .single();
-
-      if (data) {
-        setInitialTitle(data.title || "Untitled");
-        setInitialContent(data.content);
+    async function loadDoc() {
+      const doc = await fetchDocById(documentId);
+      if (doc) {
+        setInitialTitle(doc.title || "Untitled");
+        setInitialContent(doc.content);
       } else {
-        setError(error?.message || "Failed to fetch document");
         toast.error("Unable to load document");
+        setError("Document not found");
         router.push("/library");
       }
-
       setLoading(false);
     }
 
-    if (documentId) {
-      fetchDoc();
-    }
+    if (documentId) loadDoc();
   }, [documentId, router]);
 
   if (loading) {
@@ -76,7 +68,11 @@ export default function EditDocPage() {
         onSave={async (title, content) => {
           const { error } = await supabase
             .from("documents")
-            .update({ title, content, updated_at: new Date().toISOString() })
+            .update({
+              title,
+              content,
+              updated_at: new Date().toISOString(),
+            })
             .eq("id", documentId);
 
           if (error) {

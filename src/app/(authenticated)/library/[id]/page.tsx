@@ -1,44 +1,41 @@
-// src/app/(authenticated)/library/[id]/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import supabase from "@/lib/supabaseClient";
 import { useHeader } from "@/hooks/useHeader";
 import { PageContainer } from "@/components/layouts/page-container";
-import { FAB } from "@/components/ui/FAB";
 import { DocReadView } from "@/components/ui/doc-read-view";
+import { FAB } from "@/components/ui/FAB";
+import { fetchDocById } from "@/lib/fetchDocById";
 import type { Doc } from "@/types";
 
-export default function DocumentDetailPage() {
+/**
+ * DocumentDetailPage
+ *
+ * Loads a document by ID and displays it in read-only format
+ * with mobile-first styling and inline navigation.
+ */
+export default function DocDetailPage() {
   const { id } = useParams();
   const { setTitle } = useHeader();
+
   const [doc, setDoc] = useState<Doc | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchDocument() {
-      const { data, error } = await supabase
-        .from("documents")
-        .select("id, title, content")
-        .eq("id", id)
-        .single();
-
-      if (error) {
-        console.error("Error fetching document:", error);
-        setError(error.message);
-      } else if (data) {
-        setDoc(data as Doc);
-        setTitle(data.title);
+    async function loadDoc() {
+      const result = await fetchDocById(id as string);
+      if (result) {
+        setDoc(result);
+        setTitle(result.title);
       } else {
-        // data === null but no thrown error: still a failure
         setError("Document not found.");
       }
       setLoading(false);
     }
 
-    if (id) fetchDocument();
+    if (id) loadDoc();
 
     return () => {
       setTitle("YogaBlocks");
@@ -48,9 +45,11 @@ export default function DocumentDetailPage() {
   if (loading) {
     return <p className="text-center mt-10 text-muted-foreground">Loading…</p>;
   }
+
   if (error) {
     return <p className="text-center mt-10 text-destructive">Error: {error}</p>;
   }
+
   if (!doc) {
     return (
       <p className="text-center mt-10 text-muted-foreground">
@@ -62,7 +61,6 @@ export default function DocumentDetailPage() {
   return (
     <main className="relative min-h-screen">
       <PageContainer className="pt-6 px-4 pb-24">
-        {/* Pass docs into the read view for link resolution */}
         <DocReadView title={doc.title} content={doc.content} />
 
         <div className="flex justify-end mt-4">
