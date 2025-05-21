@@ -3,7 +3,7 @@
 // mode = library:   [← Back]     [Doc Title]            [ ... ]
 // mode = docView:   [← Back]     [Doc Title]            [ ... ]
 // mode = docEdit:   [✔ Save]     [Doc Title]          [📚  ...]
-// mode = docCreate: [✔ Save]     ["Untitled Asana"]   [📚  ...]
+// mode = docCreate: [✔ Save]     ["Untitled"]   [📚  ...]
 
 "use client";
 
@@ -171,7 +171,7 @@ export default function Header() {
                   className="truncate"
                 >
                   <TypographyBody>
-                    {mode === "docCreate" ? "Untitled Asana" : title}
+                    {mode === "docCreate" ? "Untitled" : title}
                   </TypographyBody>
                 </motion.div>
               </div>

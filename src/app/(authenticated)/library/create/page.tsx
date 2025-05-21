@@ -7,13 +7,13 @@ import useUser from "@/hooks/useUser";
 import supabase from "@/lib/supabaseClient";
 
 /**
- * CreateAsanaPage
+ * CreateDocPage
  *
- * Immediately creates an empty "asana" draft (with
+ * Immediately creates an empty document draft (with
  * created_by stamped to the current user), then
  * redirects into the editor for that draft.
  */
-export default function CreateAsanaPage() {
+export default function CreateDocPage() {
   const { user } = useUser();
   const router = useRouter();
 
@@ -28,7 +28,6 @@ export default function CreateAsanaPage() {
       const { data, error } = await supabase
         .from("documents")
         .insert({
-          doc_type: "asana",
           title: "",
           content: "",
           created_by: userId, // safe: userId is non-null here

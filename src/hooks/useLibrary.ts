@@ -11,8 +11,7 @@ export interface LibraryDoc {
 }
 
 /**
- * Fetches all asana documents (doc_type = 'asana')
- * and exposes an array of { id, title }.
+ * Fetches all documents and exposes an array of { id, title }
  */
 export function useLibrary(): LibraryDoc[] {
   const [docs, setDocs] = useState<LibraryDoc[]>([]);
@@ -21,11 +20,10 @@ export function useLibrary(): LibraryDoc[] {
     async function fetchLibrary() {
       const { data, error } = await supabase
         .from("documents")
-        .select("id, title, created_by")
-        .eq("doc_type", "asana");
+        .select("id, title, created_by");
 
       if (error) {
-        console.error("Error fetching asana library:", error);
+        console.error("Error fetching library:", error);
         return;
       }
 

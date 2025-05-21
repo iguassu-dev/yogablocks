@@ -8,12 +8,12 @@ import { DocEditor } from "@/components/editor/doc-editor";
 import { toast } from "sonner";
 
 /**
- * EditAsanaPage
+ * EditDocPage
  *
- * Fetches an existing Asana, displays it in the editor,
+ * Fetches an existing document, displays it in the editor,
  * and delegates save logic (including linking) to DocEditor.
  */
-export default function EditAsanaPage() {
+export default function EditDocPage() {
   const router = useRouter();
   const params = useParams();
   const documentId = params.id as string;
@@ -32,7 +32,7 @@ export default function EditAsanaPage() {
         .single();
 
       if (data) {
-        setInitialTitle(data.title || "Untitled Asana");
+        setInitialTitle(data.title || "Untitled");
         setInitialContent(data.content);
       } else {
         setError(error?.message || "Failed to fetch document");

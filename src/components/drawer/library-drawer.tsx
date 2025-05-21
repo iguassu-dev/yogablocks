@@ -29,7 +29,7 @@ interface Document {
 /**
  * LibraryDrawer
  *
- * Shows a searchable list of asana docs.
+ * Shows a searchable list of docs.
  * – If there's no current document ID (i.e. on "create" page), we render a notice.
  * – Otherwise, clicking the "+" on a DocCard upserts the link and invokes onInsertLink.
  */
@@ -46,13 +46,12 @@ export function LibraryDrawer() {
   const [searchValue, setSearchValue] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  // Fetch all asanas when drawer opens
+  // Fetch all docs when drawer opens
   useEffect(() => {
     if (!isLibraryDrawerOpen) return;
     supabase
       .from("documents")
       .select("id, title, content")
-      .eq("doc_type", "asana")
       .order("title", { ascending: true })
       .then(({ data, error }) => {
         if (error) console.error(error);
@@ -157,7 +156,7 @@ export function LibraryDrawer() {
               filtered.map((doc) => (
                 <DocCard
                   key={doc.id}
-                  title={doc.title?.trim() || "Untitled Asana"}
+                  title={doc.title?.trim() || "Untitled"}
                   preview={getPreview(doc.content)}
                   showPlusIcon
                   onPlusClick={() => handleInsert(doc)}

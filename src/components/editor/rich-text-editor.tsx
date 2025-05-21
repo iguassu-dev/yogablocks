@@ -101,7 +101,7 @@ export function RichTextEditor({
         placeholder: ({ node }) => {
           // Show specific placeholder for h1 (title)
           if (node.type.name === "heading" && node.attrs.level === 1) {
-            return "Untitled Asana";
+            return "Untitled";
           }
 
           // Default placeholder for other content
@@ -161,7 +161,7 @@ export function RichTextEditor({
       const html = editor.getHTML();
       const match = html.match(/<h1[^>]*>(.*?)<\/h1>/i);
       const extractedTitle =
-        match?.[1]?.replace(/<[^>]+>/g, "").trim() || "Untitled Asana";
+        match?.[1]?.replace(/<[^>]+>/g, "").trim() || "Untitled";
       onChange(html, extractedTitle);
     },
   });

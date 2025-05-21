@@ -35,7 +35,7 @@ export type DocEditorProps = {
  *  • Link-insertion hook (for Library Drawer)
  */
 export function DocEditor({
-  initialTitle = "Untitled Asana",
+  initialTitle = "Untitled",
   initialContent = "",
   onSave,
 }: DocEditorProps) {
@@ -70,7 +70,7 @@ export function DocEditor({
     const doc = new DOMParser().parseFromString(html, "text/html");
     // Find first heading or paragraph
     const heading = doc.querySelector("h1, h2, h3, h4, h5, h6");
-    let title = "Untitled Asana";
+    let title = "Untitled";
 
     if (heading) {
       title = heading.textContent?.trim() || title;
@@ -186,7 +186,7 @@ export function DocEditor({
         onChange={(html, extractedTitle) => {
           // live update title
           setDocumentContent(html);
-          setHeaderTitle(extractedTitle ?? "Untitled Asana");
+          setHeaderTitle(extractedTitle ?? "Untitled");
         }}
       />
 

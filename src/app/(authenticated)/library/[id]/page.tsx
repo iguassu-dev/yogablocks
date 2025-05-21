@@ -1,3 +1,4 @@
+// src/app/(authenticated)/library/[id]/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -6,7 +7,7 @@ import supabase from "@/lib/supabaseClient";
 import { useHeader } from "@/hooks/useHeader";
 import { PageContainer } from "@/components/layouts/page-container";
 import { FAB } from "@/components/ui/FAB";
-import { AsanaReadView } from "@/components/ui/asana-read-view";
+import { DocReadView } from "@/components/ui/doc-read-view";
 
 interface Document {
   id: string;
@@ -67,7 +68,7 @@ export default function DocumentDetailPage() {
     <main className="relative min-h-screen">
       <PageContainer className="pt-6 px-4 pb-24">
         {/* Pass docs into the read view for link resolution */}
-        <AsanaReadView title={document.title} content={document.content} />
+        <DocReadView title={document.title} content={document.content} />
 
         <div className="flex justify-end mt-4">
           <FAB variant="edit" href={`/library/edit/${document.id}`} />

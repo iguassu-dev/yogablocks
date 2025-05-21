@@ -1,6 +1,4 @@
-// src/components/ui/asana-read-view.tsx
-
-"use client";
+// src/components/ui/doc-read-view.tsx
 
 "use client";
 
@@ -9,7 +7,7 @@ import { useEffect, useState } from "react";
 import { markdownToHtml } from "@/lib/markdownHelpers";
 import { TypographyHeading1 } from "@/components/ui/typography";
 
-export function AsanaReadView({
+export function DocReadView({
   title,
   content,
 }: {

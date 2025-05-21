@@ -21,10 +21,10 @@ export default function LibraryPage() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [asanas, setAsanas] = useState<Asana[]>([]);
+  const [docs, setDocs] = useState<Doc[]>([]);
   const [debouncedSearchValue] = useDebounce(searchValue, 300);
 
-  type Asana = {
+  type Doc = {
     id: string;
     title: string;
     content: string;
@@ -38,10 +38,7 @@ export default function LibraryPage() {
 
   useEffect(() => {
     async function fetchData() {
-      let query = supabase
-        .from("documents")
-        .select("*")
-        .eq("doc_type", "asana");
+      let query = supabase.from("documents").select("*");
 
       if (debouncedSearchValue) {
         query = query.or(
@@ -54,7 +51,7 @@ export default function LibraryPage() {
       if (error) {
         setError(error.message);
       } else {
-        setAsanas(data || []);
+        setDocs(data || []);
       }
       setLoading(false);
     }
@@ -73,7 +70,7 @@ export default function LibraryPage() {
   if (error) {
     return (
       <p className="text-center mt-10 text-destructive">
-        Error loading asanas: {error}
+        Error loading docs: {error}
       </p>
     );
   }
@@ -81,14 +78,16 @@ export default function LibraryPage() {
   return (
     <main className="relative min-h-screen">
       <PageContainer className="pt-6 px-4 pb-24">
-        {asanas.length === 0 ? (
-          <p className="text-center text-muted-foreground">No asanas found.</p>
+        {docs.length === 0 ? (
+          <p className="text-center text-muted-foreground">
+            No documents found.
+          </p>
         ) : (
-          asanas.map((asana) => (
-            <Link key={asana.id} href={`/library/${asana.id}`}>
+          docs.map((doc) => (
+            <Link key={doc.id} href={`/library/${doc.id}`}>
               <DocCard
-                title={asana.title}
-                preview={getPreview(asana.content)}
+                title={doc.title}
+                preview={getPreview(doc.content)}
                 showPlusIcon={false}
               />
             </Link>

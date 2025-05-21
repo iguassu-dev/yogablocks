@@ -18,9 +18,7 @@ export async function duplicateDoc(documentId: string): Promise<string | null> {
     return null;
   }
 
-  const newTitle = data.title
-    ? `${data.title} (Copy)`
-    : "Untitled Asana (Copy)";
+  const newTitle = data.title ? `${data.title} (Copy)` : "Untitled(Copy)";
 
   // 2. Insert duplicated doc
   const { data: inserted, error: insertError } = await supabase
