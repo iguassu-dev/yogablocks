@@ -1,7 +1,6 @@
 // src/lib/extractMarkdownLinks.ts
 /**
- * Extracts all links of the form [Label](/library/target_id)
- * from a markdown string.
+ * Extracts all links of the form [Label](/library/target_id) from a markdown string.
  *
  * Returns an array of:
  *  - target_id: the document ID being linked

@@ -7,24 +7,29 @@ import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import { DocEditor } from "@/components/editor/doc-editor";
 import { getDocById } from "@/lib/documents/getDocById";
-import { updateDoc } from "@/lib/documents/updateDoc";
+import { saveDoc } from "@/lib/documents/saveDoc";
 
 /**
  * EditDocPage
  *
- * Loads a document by ID, passes its data into the editor,
- * and wires up the save functionality for updates.
+ * This page loads a document for editing.
+ * - Loads the doc's initial data from the database (title/content)
+ * - Renders the DocEditor, passing initial data and the save handler
+ * - Handles UI for loading/error states and redirects after save
  */
 export default function EditDocPage() {
   const router = useRouter();
   const params = useParams();
   const documentId = params.id as string;
 
+  // State for initial doc values and UI feedback
   const [initialTitle, setInitialTitle] = useState<string>("");
   const [initialContent, setInitialContent] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState<boolean>(false);
 
+  // On mount, load the document from the database
   useEffect(() => {
     async function loadDoc() {
       const doc = await getDocById(documentId);
@@ -42,12 +47,14 @@ export default function EditDocPage() {
     if (documentId) loadDoc();
   }, [documentId, router]);
 
+  // While loading, show a loading message
   if (loading) {
     return (
       <p className="p-4 text-muted-foreground text-sm">Loading document...</p>
     );
   }
 
+  // If there's an error, display a friendly message and a return link
   if (error) {
     return (
       <div className="p-4">
@@ -62,30 +69,31 @@ export default function EditDocPage() {
     );
   }
 
+  // Handle save: hand editorHtml off to saveDocument helper
+  const handleSave = async (editorHtml: string) => {
+    setSaving(true);
+    const success = await saveDoc({
+      docId: documentId,
+      editorHtml,
+    });
+    setSaving(false);
+
+    if (!success) {
+      toast.error("Failed to save changes");
+    } else {
+      toast.success("Changes saved successfully");
+      router.replace(`/library/${documentId}?from=edit`);
+    }
+  };
+
+  // Render the editor with the loaded document data
   return (
     <main className="relative min-h-screen">
       <DocEditor
         initialTitle={initialTitle}
         initialContent={initialContent}
-        onSave={async (title, content) => {
-          const success = await updateDoc(documentId, { title, content });
-
-          if (!success) {
-            toast.error("Failed to save changes");
-            return;
-          }
-
-          toast.success("Changes saved successfully");
-          router.replace(`/library/${documentId}?from=edit`);
-
-          if (error) {
-            toast.error("Failed to save changes");
-            return;
-          }
-
-          toast.success("Changes saved successfully");
-          router.replace(`/library/${documentId}?from=edit`);
-        }}
+        onSave={handleSave}
+        saving={saving}
       />
     </main>
   );
