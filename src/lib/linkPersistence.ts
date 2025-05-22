@@ -1,4 +1,10 @@
 // src/lib/linkPersistence.ts
+
+/**
+ * Handles all Supabase operations for the document_links table: fetch, insert (upsert), delete.
+ * Keeps all link-related DB logic separate from UI and editor logic.
+ */
+
 import supabase from "./supabaseClient";
 
 // (1) Keep a single source of truth for DocumentLink

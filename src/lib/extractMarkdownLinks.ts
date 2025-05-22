@@ -1,12 +1,11 @@
 // src/lib/extractMarkdownLinks.ts
 /**
  * Extracts all links of the form [Label](/library/target_id) from a markdown string.
- *
- * Returns an array of:
- *  - target_id: the document ID being linked
- *  - label: the visible link text
- *  - position: order in which the link appears
+ * - Returns an array of link objects: { target_id, label, position }
+ * - Used to sync editor content with document_links DB table
+ * - Keeps link detection logic simple and consistent across the app
  */
+
 export function extractMarkdownLinks(content: string): {
   target_id: string;
   label: string;

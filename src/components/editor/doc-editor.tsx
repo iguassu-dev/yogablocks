@@ -7,6 +7,7 @@ import { useEffect, useCallback, useState } from "react";
 import { PageContainer } from "@/components/layouts/page-container";
 import { RichTextEditor } from "./rich-text-editor";
 import { useHeader } from "@/hooks/useHeader";
+import { insertLibraryLink } from "@/lib/editorLinkUtils";
 
 /**
  * Props for DocEditor:
@@ -61,11 +62,7 @@ export function DocEditor({
   const handleReady = useCallback(
     (editor: Editor) => {
       setOnInsertLink((doc) => {
-        editor
-          .chain()
-          .focus()
-          .insertContent(`<a href="/library/${doc.id}">${doc.title}</a>`)
-          .run();
+        insertLibraryLink(editor, doc);
       });
     },
     [setOnInsertLink]

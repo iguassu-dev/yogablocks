@@ -1,5 +1,12 @@
 // src/lib/markdownHelpers.ts
-// Markdown, string, styling helpers
+/**
+ * Utility functions for handling Markdown and HTML transformations in YogaBlocks.
+ * - Convert Markdown to HTML and back
+ * - Remove formatting and strip down to plain text for previews
+ * - Validate UUIDs for link extraction
+ *
+ * Keeps all Markdown/HTML conversion and cleanup logic reusable and testable.
+ */
 
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
