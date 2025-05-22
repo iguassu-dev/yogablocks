@@ -1,3 +1,5 @@
+// src/app/[authenticated]/library/[id]/page.tsx
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -6,8 +8,8 @@ import { useHeader } from "@/hooks/useHeader";
 import { PageContainer } from "@/components/layouts/page-container";
 import { DocReadView } from "@/components/ui/doc-read-view";
 import { FAB } from "@/components/ui/FAB";
-import { fetchDocById } from "@/lib/fetchDocById";
-import type { Doc } from "@/types";
+import { getDocById } from "@/lib/documents/getDocById";
+import type { Doc } from "@/lib/documents/types";
 
 /**
  * DocumentDetailPage
@@ -25,7 +27,7 @@ export default function DocDetailPage() {
 
   useEffect(() => {
     async function loadDoc() {
-      const result = await fetchDocById(id as string);
+      const result = await getDocById(id as string);
       if (result) {
         setDoc(result);
         setTitle(result.title);

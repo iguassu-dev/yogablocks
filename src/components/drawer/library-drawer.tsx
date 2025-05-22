@@ -7,18 +7,21 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
+
+import { useEffect, useState } from "react";
+import { useHeader } from "@/hooks/useHeader";
 import { SearchInput } from "@/components/ui/search-input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
-import { useHeader } from "@/hooks/useHeader";
+
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+
 import { DocCard } from "@/components/ui/doc-card";
 import { getPreview } from "@/lib/markdownHelpers";
 import { fetchLinkForDoc, upsertLink } from "@/lib/linkPersistence";
-import type { Doc } from "@/types";
-import { fetchDoc } from "@/lib/fetchDoc";
+import type { Doc } from "@/lib/documents/types";
+import { getAllDocs } from "@/lib/documents/getAllDocs";
 
 /**
  * LibraryDrawer
@@ -43,7 +46,7 @@ export function LibraryDrawer() {
   // Fetch all docs when drawer opens
   useEffect(() => {
     if (!isLibraryDrawerOpen) return;
-    fetchDoc({ fields: "id, title, content" })
+    getAllDocs({ fields: "id, title, content" })
       .then(setDocuments)
       .catch(console.error);
   }, [isLibraryDrawerOpen]);

@@ -1,11 +1,13 @@
+// src/app/(authenticated)/library/edit/[id]/page.tsx
+
 "use client";
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import { DocEditor } from "@/components/editor/doc-editor";
-import { fetchDocById } from "@/lib/fetchDocById";
-import supabase from "@/lib/supabaseClient";
+import { getDocById } from "@/lib/documents/getDocById";
+import { updateDoc } from "@/lib/documents/updateDoc";
 
 /**
  * EditDocPage
@@ -25,7 +27,7 @@ export default function EditDocPage() {
 
   useEffect(() => {
     async function loadDoc() {
-      const doc = await fetchDocById(documentId);
+      const doc = await getDocById(documentId);
       if (doc) {
         setInitialTitle(doc.title || "Untitled");
         setInitialContent(doc.content);
@@ -66,14 +68,15 @@ export default function EditDocPage() {
         initialTitle={initialTitle}
         initialContent={initialContent}
         onSave={async (title, content) => {
-          const { error } = await supabase
-            .from("documents")
-            .update({
-              title,
-              content,
-              updated_at: new Date().toISOString(),
-            })
-            .eq("id", documentId);
+          const success = await updateDoc(documentId, { title, content });
+
+          if (!success) {
+            toast.error("Failed to save changes");
+            return;
+          }
+
+          toast.success("Changes saved successfully");
+          router.replace(`/library/${documentId}?from=edit`);
 
           if (error) {
             toast.error("Failed to save changes");

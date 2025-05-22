@@ -27,8 +27,8 @@ import { SearchInput } from "@/components/ui/search-input";
 import { PageContainer } from "@/components/layouts/page-container";
 import { LibraryDrawer } from "@/components/drawer/library-drawer";
 import { useHeader } from "@/hooks/useHeader";
-import { deleteDocById } from "@/lib/deleteDoc";
-import { duplicateDoc } from "@/lib/duplicateDoc";
+import { deleteDocById } from "@/lib/documents/deleteDoc";
+import { duplicateDoc } from "@/lib/documents/duplicateDoc";
 import {
   DropdownMenu,
   DropdownMenuTrigger,

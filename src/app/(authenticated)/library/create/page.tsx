@@ -1,55 +1,39 @@
-// src/app/(authenticated)/library/create/page.tsx
 "use client";
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import useUser from "@/hooks/useUser";
-import supabase from "@/lib/supabaseClient";
+import { createDoc } from "@/lib/documents/createDoc";
 
 /**
  * CreateDocPage
  *
- * Immediately creates an empty document draft (with
- * created_by stamped to the current user), then
- * redirects into the editor for that draft.
+ * Immediately creates an empty document draft (with created_by = user.id),
+ * then redirects to the editor. Works only once user is fully loaded.
  */
 export default function CreateDocPage() {
-  const { user } = useUser();
+  const { user, loading } = useUser();
   const router = useRouter();
 
-  // Extract userId so we can narrow its type
-  const userId = user?.id;
-
   useEffect(() => {
-    // Don’t run until we have a valid userId
-    if (!userId) return;
+    // Don't run until user is fully loaded and defined
+    if (loading || !user) return;
 
-    async function createDraft() {
-      const { data, error } = await supabase
-        .from("documents")
-        .insert({
-          title: "",
-          content: "",
-          created_by: userId, // safe: userId is non-null here
-        })
-        .select("id")
-        .single();
-
-      if (error || !data) {
-        console.error("Failed to create draft", error);
-        return;
-      }
-
-      // Replace so back-button doesn’t go back to /create
-      router.replace(`/library/edit/${data.id}`);
-    }
-
-    createDraft();
-  }, [userId, router]); // effect only re-runs when userId or router change
+    createDoc(user.id)
+      .then(([success, newId]) => {
+        if (!success || !newId) {
+          console.error("❌ Failed to create draft");
+          return;
+        }
+        router.replace(`/library/edit/${newId}`);
+      })
+      .catch((err) => {
+        console.error("❌ Unexpected error in createDoc:", err);
+      });
+  }, [user, loading, router]);
 
   return (
     <div className="flex items-center justify-center h-full">
-      {/* Simple pulsing bar as a skeleton header */}
       <div className="animate-pulse h-6 w-32 bg-muted rounded" />
     </div>
   );

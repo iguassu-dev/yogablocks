@@ -1,4 +1,3 @@
-// library home page
 // src/app/(authenticated)/library/page.tsx
 "use client";
 
@@ -12,8 +11,8 @@ import { useDebounce } from "use-debounce";
 import { DocCard } from "@/components/ui/doc-card";
 import { getPreview } from "@/lib/markdownHelpers";
 import { FAB } from "@/components/ui/FAB";
-import type { Doc } from "@/types";
-import { fetchDoc } from "@/lib/fetchDoc";
+import type { Doc } from "@/lib/documents/types";
+import { getAllDocs } from "@/lib/documents/getAllDocs";
 
 export default function LibraryPage() {
   const { user, loading: userLoading } = useUser();
@@ -34,7 +33,7 @@ export default function LibraryPage() {
   useEffect(() => {
     async function loadDocs() {
       try {
-        const data = await fetchDoc({
+        const data = await getAllDocs({
           search: debouncedSearchValue,
         });
         setDocs(data);
