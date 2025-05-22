@@ -27,6 +27,7 @@ export async function createDoc(
     .insert({
       title,
       content,
+      doc_type: "user",
       created_by: userId,
     })
     .select("id")

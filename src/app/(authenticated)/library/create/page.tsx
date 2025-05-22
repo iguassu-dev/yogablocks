@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import useUser from "@/hooks/useUser";
 import { createDoc } from "@/lib/documents/createDoc";
+import { useRef } from "react";
 
 /**
  * CreateDocPage
@@ -14,10 +15,11 @@ import { createDoc } from "@/lib/documents/createDoc";
 export default function CreateDocPage() {
   const { user, loading } = useUser();
   const router = useRouter();
+  const hasRun = useRef(false); // 🛑 prevents duplicate calls
 
   useEffect(() => {
-    // Don't run until user is fully loaded and defined
-    if (loading || !user) return;
+    if (hasRun.current || loading || !user) return;
+    hasRun.current = true;
 
     createDoc(user.id)
       .then(([success, newId]) => {
