@@ -63,11 +63,12 @@ export default function Header() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleDelete = async () => {
-    try {
-      await deleteDocById(documentId);
+    const success = await deleteDocById(documentId);
+    if (success) {
       router.push("/library");
-    } catch (err) {
-      console.error(err);
+    } else {
+      console.error("❌ Document deletion failed");
+      // optionally add a toast here
     }
   };
 

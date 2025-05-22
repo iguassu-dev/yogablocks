@@ -1,15 +1,24 @@
-// src/lib/deleteDoc.ts
+// src/lib/documents/deleteDoc.ts
 import supabase from "@/lib/supabaseClient";
 
 /**
- * Deletes a document from Supabase by ID.
- * @param id - The UUID of the document to delete.
- * @returns Promise<void>, throws error if deletion fails
+ * Deletes a document from the `documents` table by ID.
+ *
+ * @param id - UUID of the document to delete
+ * @returns boolean - true if successful, false if failed
  */
-export async function deleteDocById(id: string): Promise<void> {
-  const { error } = await supabase.from("documents").delete().eq("id", id);
-  if (error) {
-    console.error("❌ Supabase delete error:", error);
-    throw new Error("Failed to delete document");
+export async function deleteDocById(id: string): Promise<boolean> {
+  if (!id) {
+    console.error("[deleteDocById] Missing document ID");
+    return false;
   }
+
+  const { error } = await supabase.from("documents").delete().eq("id", id);
+
+  if (error) {
+    console.error("[deleteDocById] Supabase delete error:", error);
+    return false;
+  }
+
+  return true;
 }
