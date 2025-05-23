@@ -19,7 +19,7 @@ import { motion } from "framer-motion";
 
 import { DocCard } from "@/components/ui/doc-card";
 import { getPreview } from "@/lib/markdownHelpers";
-import { fetchLinkForDoc, upsertLink } from "@/lib/linkPersistence";
+import { fetchLinkForDoc, upsertLink } from "@/lib/documentLinkStore";
 import type { Doc } from "@/lib/documents/types";
 import { getAllDocs } from "@/lib/documents/getAllDocs";
 

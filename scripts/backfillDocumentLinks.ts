@@ -2,7 +2,7 @@
 
 import "dotenv/config"; // Load .env variables for CLI use
 import { createClient } from "@supabase/supabase-js";
-import { extractMarkdownLinks } from "@/lib/extractMarkdownLinks";
+import { extractMarkdownLinks } from "@/lib/markdownLinkParser";
 import { isValidUUID } from "@/lib/markdownHelpers";
 
 // Setup Supabase client for CLI use

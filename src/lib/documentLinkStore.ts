@@ -1,4 +1,4 @@
-// src/lib/linkPersistence.ts
+// src/lib/documentLinkStore.ts
 
 /**
  * Handles all Supabase operations for the document_links table: fetch, insert (upsert), delete.

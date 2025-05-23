@@ -1,8 +1,12 @@
 // src/lib/documents/saveDoc.ts
 
 import { updateDoc } from "./updateDoc";
-import { extractMarkdownLinks } from "@/lib/extractMarkdownLinks";
-import { fetchLinkForDoc, upsertLink, deleteLink } from "@/lib/linkPersistence";
+import { extractMarkdownLinks } from "@/lib/markdownLinkParser";
+import {
+  fetchLinkForDoc,
+  upsertLink,
+  deleteLink,
+} from "@/lib/documentLinkStore";
 
 /**
  * saveDoc

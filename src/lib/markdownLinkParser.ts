@@ -1,4 +1,4 @@
-// src/lib/extractMarkdownLinks.ts
+// src/lib/	markdownLinkParser.ts
 /**
  * Extracts all links of the form [Label](/library/target_id) from a markdown string.
  * - Returns an array of link objects: { target_id, label, position }

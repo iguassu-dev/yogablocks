@@ -3,7 +3,8 @@ import supabase from "@/lib/supabaseClient";
 
 /**
  * Updates an existing document in the `documents` table.
- *
+ * Not called by pages/components directly (except for
+ * admin tasks/scripts); called internally by saveDoc
  * @param id - UUID of the document to update
  * @param updates - Partial update fields (e.g. title, content)
  * @returns `true` if successful, otherwise `false`
