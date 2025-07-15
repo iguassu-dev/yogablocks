@@ -128,7 +128,7 @@ export function LibraryDrawer() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="md:hidden"
+                    className="shrink-0 h-10 w-10"
                     aria-label="Open search"
                     onClick={() => setIsSearchOpen(true)}
                   >
