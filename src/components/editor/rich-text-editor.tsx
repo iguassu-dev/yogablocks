@@ -5,7 +5,6 @@
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import type { Editor } from "@tiptap/react";
-import { KeyboardToolbar } from "@/components/editor/keyboard-toolbar";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import Link from "@tiptap/extension-link";
@@ -194,7 +193,6 @@ export function RichTextEditor({
       "
     >
       <EditorContent editor={editor} />
-      <KeyboardToolbar editor={editor} />
     </article>
   );
 }

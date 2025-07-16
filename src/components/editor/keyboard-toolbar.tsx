@@ -1,5 +1,7 @@
 // src/components/editor/keyboard-toolbar.tsx
 // mobile-only formatting UI
+// disabled in current version
+
 "use client";
 
 import { Editor } from "@tiptap/react";

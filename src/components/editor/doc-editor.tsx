@@ -91,7 +91,7 @@ export function DocEditor({
         // ⬆️ REMOVED 'saving' prop; not needed in RichTextEditor itself
       />
 
-      {/* KeyboardToolbar is already included in RichTextEditor */}
+      {/* KeyboardToolbar is not included in current version */}
     </PageContainer>
   );
 }
