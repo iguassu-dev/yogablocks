@@ -86,8 +86,11 @@ export function LibraryDrawer() {
     }
   }
 
-  const filtered = documents.filter((d) =>
-    d.title.toLowerCase().includes(searchValue.toLowerCase())
+  const filtered = documents.filter(
+    (d) =>
+      d.id !== sourceId &&
+      // Prevent a document from seeing itself in the drawer
+      d.title.toLowerCase().includes(searchValue.toLowerCase())
   );
 
   return (
