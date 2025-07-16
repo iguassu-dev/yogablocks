@@ -138,7 +138,9 @@ export default function Header() {
                   transition={{ duration: 0.25 }}
                   className="truncate"
                 >
-                  <TypographyBody>{title}</TypographyBody>
+                  <TypographyBody className="m-0 align-middle">
+                    {title}
+                  </TypographyBody>
                 </motion.div>
               </div>
 
