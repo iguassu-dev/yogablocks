@@ -75,6 +75,12 @@ export function HeaderProvider({ children }: { children: React.ReactNode }) {
     else setMode("library");
   }, [pathname]);
 
+  //Auto-close library drawer when leaving edit mode
+  useEffect(() => {
+    if (mode !== "docEdit" && isLibraryDrawerOpen) {
+      setIsLibraryDrawerOpen(false);
+    }
+  }, [mode, isLibraryDrawerOpen, setIsLibraryDrawerOpen]);
   // ────────────────────────────────────────────────────────────────────
   // 3) Stabilize your setters with `useCallback` so they never change⬇
   // ────────────────────────────────────────────────────────────────────
