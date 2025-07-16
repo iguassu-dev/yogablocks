@@ -75,7 +75,7 @@ export default function Header() {
   return (
     <>
       <header className="sticky top-0 z-50 bg-background supports-[backdrop-filter]:bg-background border-b pt-safe-top">
-        <PageContainer className="flex h-14 items-center gap-2 min-w-0 overflow-hidden">
+        <PageContainer className="flex h-14 items-center gap-2 px-0 overflow-hidden">
           {/* ───── Library Mode ───── */}
           {mode === "library" && (
             <>

@@ -14,7 +14,7 @@ export function PageContainer({
     <div
       className={cn(
         // ✅ Full width by default, but constrained to 1024px for readability
-        "w-full max-w-4xl px-4 mx-auto",
+        "w-full max-w-4xl px-4 mx-auto ",
         className
       )}
     >
