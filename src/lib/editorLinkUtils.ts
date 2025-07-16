@@ -19,6 +19,10 @@ export function insertLibraryLink(
   editor
     .chain()
     .focus()
-    .insertContent(`<a href="/library/${doc.id}">${doc.title}</a>`)
+    .insertContent(
+      `<a href="/library/${doc.id}">${doc.title}</a>&nbsp;`
+      //Automatically insert a trailing space to "exit" the link mark,
+      //preventing the next character from inheriting the link style.
+    )
     .run();
 }
