@@ -92,7 +92,9 @@ export default function Header() {
               ) : (
                 <>
                   <Link href="/library" className="truncate text-center">
-                    <TypographyHeading3>YogaBlocks</TypographyHeading3>
+                    <TypographyHeading3 className="m-0 align-middle">
+                      YogaBlocks
+                    </TypographyHeading3>
                   </Link>
                   <div className="flex-1 flex justify-end">
                     <Button
@@ -171,7 +173,7 @@ export default function Header() {
                   transition={{ duration: 0.25 }}
                   className="truncate"
                 >
-                  <TypographyBody>
+                  <TypographyBody className="m-0 align-middle">
                     {mode === "docCreate" ? "Untitled" : title}
                   </TypographyBody>
                 </motion.div>
