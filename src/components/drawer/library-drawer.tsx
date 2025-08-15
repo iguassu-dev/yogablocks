@@ -86,12 +86,15 @@ export function LibraryDrawer() {
     }
   }
 
-  const filtered = documents.filter(
-    (d) =>
-      d.id !== sourceId &&
-      // Prevent a document from seeing itself in the drawer
-      d.title.toLowerCase().includes(searchValue.toLowerCase())
-  );
+  const filtered = documents
+    .filter(
+      (d) =>
+        d.id !== sourceId &&
+        // Prevent a document from seeing itself in the drawer
+        d.title.toLowerCase().includes(searchValue.toLowerCase())
+    )
+    // ✅ Keep alphabetical order after filtering
+    .sort((a, b) => a.title.localeCompare(b.title));
 
   return (
     <Sheet open={isLibraryDrawerOpen} onOpenChange={setIsLibraryDrawerOpen}>
