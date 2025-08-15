@@ -17,7 +17,10 @@ export async function getAllDocs({
   search?: string;
 } = {}): Promise<Doc[]> {
   // Initialize query with optional fields (default "*")
-  let query = supabase.from("documents").select(fields);
+  let query = supabase
+    .from("documents")
+    .select(fields)
+    .order("title", { ascending: true }); // ✅ Alphabetical order
 
   // Apply full-text search if search term is provided
   if (search) {
