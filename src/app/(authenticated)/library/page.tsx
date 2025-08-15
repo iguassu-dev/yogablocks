@@ -62,16 +62,16 @@ export default function LibraryPage() {
       </p>
     );
   }
-
+  const sortedDocs = [...docs].sort((a, b) => a.title.localeCompare(b.title));
   return (
     <main className="relative min-h-screen">
       <PageContainer className="pt-6 px-4 pb-24">
-        {docs.length === 0 ? (
+        {sortedDocs.length === 0 ? (
           <p className="text-center text-muted-foreground">
             No documents found.
           </p>
         ) : (
-          docs.map((doc) => (
+          sortedDocs.map((doc) => (
             <Link key={doc.id} href={`/library/${doc.id}`}>
               <DocCard
                 title={doc.title}
